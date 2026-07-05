@@ -41,6 +41,7 @@ final class PuzzlePieceView: UIView {
 
         statusLabel.font = AppFont.medium(11)
         statusLabel.textColor = fg
+        nameLabel.text = piece.name
         nameLabel.font = AppFont.bold(15)
         nameLabel.textColor = fg
 
