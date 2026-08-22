@@ -12,6 +12,33 @@ final class ResultViewController: BaseScrollViewController {
 
     private let dest = SampleData.destination
 
+    /// 슬롯 draw/result 로 받은 실제 서버 결과 (없으면 SampleData 로 표시)
+    private let result: SavedSlotDTO?
+
+    init(result: SavedSlotDTO? = nil) {
+        self.result = result
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    // MARK: - 표시값 (서버 결과 우선, 없으면 SampleData 폴백)
+
+    private var placeName: String { result?.place.name ?? dest.name }
+    private var categoryText: String {
+        // 08-17: category 는 TourAPI cat2 한글명 문자열 그대로 표시
+        if let category = result?.place.category, category != "UNKNOWN" { return category }
+        return dest.category
+    }
+    private var locationText: String {
+        if let address = result?.place.address, !address.isEmpty { return address }
+        return "TourAPI · 강원 강릉시"
+    }
+    private var metaLine: String {
+        if let tier = result?.place.budgetTier { return "예산 \(Self.budgetLabel(tier))" }
+        return "예산 ~\(dest.budget / 10000)만원"
+    }
+    private var missionTitle: String { result?.mission?.title ?? dest.missionTitle }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "추천 결과"
@@ -47,7 +74,7 @@ final class ResultViewController: BaseScrollViewController {
         let star = UILabel.make("★", font: AppFont.bold(18), color: .white, align: .center)
         pin.addSubview(star)
         star.snp.makeConstraints { $0.center.equalToSuperview() }
-        let label = UILabel.make("TourAPI · 강원 강릉시", font: AppFont.medium(13), color: AppColor.sub)
+        let label = UILabel.make(locationText, font: AppFont.medium(13), color: AppColor.sub)
         map.addSubview(pin)
         map.addSubview(label)
         map.snp.makeConstraints { $0.height.equalTo(170) }
@@ -62,21 +89,20 @@ final class ResultViewController: BaseScrollViewController {
         titleRow.axis = .horizontal
         titleRow.alignment = .center
         titleRow.spacing = 8
-        let name = UILabel.make(dest.name, font: AppFont.bold(20), color: AppColor.ink)
+        let name = UILabel.make(placeName, font: AppFont.bold(20), color: AppColor.ink)
         let hiddenChip = ChipView(text: "숨은 명소", filled: true)
         titleRow.addArrangedSubview(name)
         titleRow.addArrangedSubview(hiddenChip)
         let spacer = UIView(); spacer.setContentHuggingPriority(UILayoutPriority(1), for: .horizontal)
         titleRow.addArrangedSubview(spacer)
 
-        let category = UILabel.make(dest.category, font: AppFont.medium(13), color: AppColor.cafe)
+        let category = UILabel.make(categoryText, font: AppFont.medium(13), color: AppColor.cafe)
 
         let meta = UIStackView()
         meta.axis = .horizontal
         meta.spacing = 14
         meta.addArrangedSubview(UILabel.make("리뷰 적음 ✦", font: AppFont.bold(13), color: AppColor.coral))
-        meta.addArrangedSubview(UILabel.make("자차 \(Int(dest.distanceKm))km", font: AppFont.regular(13), color: AppColor.sub))
-        meta.addArrangedSubview(UILabel.make("예산 ~\(dest.budget / 10000)만원", font: AppFont.regular(13), color: AppColor.sub))
+        meta.addArrangedSubview(UILabel.make(metaLine, font: AppFont.regular(13), color: AppColor.sub))
         let metaSpacer = UIView(); metaSpacer.setContentHuggingPriority(UILayoutPriority(1), for: .horizontal)
         meta.addArrangedSubview(metaSpacer)
 
@@ -101,7 +127,7 @@ final class ResultViewController: BaseScrollViewController {
         let badge = UIView()
         badge.backgroundColor = UIColor(hex: 0xFAEBE8)
         badge.layer.cornerRadius = 12
-        let label = UILabel.make("🎲 운명 미션 · \(dest.missionTitle)", font: AppFont.bold(13), color: AppColor.coral)
+        let label = UILabel.make("🎲 운명 미션 · \(missionTitle)", font: AppFont.bold(13), color: AppColor.coral)
         badge.addSubview(label)
         label.snp.makeConstraints { $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 11, left: 12, bottom: 11, right: 12)) }
         return badge
@@ -115,5 +141,40 @@ final class ResultViewController: BaseScrollViewController {
 
     @objc private func goRoute() { navigationController?.pushViewController(RouteViewController(), animated: true) }
     @objc private func goShortform() { navigationController?.pushViewController(ShortformEditorViewController(), animated: true) }
-    @objc private func save() {}
+
+    /// 코스에 저장 — 슬롯(slotId)을 여행 코스에 추가
+    @objc private func save() {
+        guard let slotId = result?.slotId else {
+            showAlert(title: "안내", message: "저장할 슬롯 결과가 없습니다.")
+            return
+        }
+        APIClient.shared.course.add(slotId: slotId) { [weak self] outcome in
+            switch outcome {
+            case .success:
+                self?.showAlert(title: "저장 완료", message: "여행 코스에 담았어요.")
+            case .failure(let error):
+                if error.errorCode == .alreadyAdded {
+                    self?.showAlert(title: "안내", message: "이미 코스에 담긴 장소예요.")
+                } else {
+                    self?.showAlert(title: "저장 실패", message: error.description)
+                }
+            }
+        }
+    }
+
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        present(alert, animated: true)
+    }
+
+    // MARK: - enum → 한글 라벨
+
+    private static func budgetLabel(_ level: BudgetLevel) -> String {
+        switch level {
+        case .low:    return "~5만원"
+        case .medium: return "~10만원"
+        case .high:   return "20만원+"
+        }
+    }
 }

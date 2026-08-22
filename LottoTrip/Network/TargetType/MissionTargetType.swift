@@ -2,52 +2,36 @@
 //  MissionTargetType.swift
 //  LottoTrip
 //
+//  미션 도메인 엔드포인트.
+//  POST /missions/{missionId}/complete
+//
 
 import Foundation
 import Moya
 
 enum MissionTargetType {
-    case current(placeId: String)
-    case verify(missionId: String, imageData: Data)   // 사진 인증(멀티파트)
-    case history
+    case complete(missionId: Int, body: MissionCompleteRequestDTO?)
 }
 
-extension MissionTargetType: TargetType {
-    var baseURL: URL { URL(string: Domain.missionURL)! }
+extension MissionTargetType: TargetType, AuthorizedTargetType {
+    var baseURL: URL { URL(string: Domain.baseURL)! }
 
     var path: String {
         switch self {
-        case .current: return "/current"
-        case .verify:  return "/verify"
-        case .history: return "/history"
+        case let .complete(missionId, _):
+            return "\(Domain.missions)/\(missionId)/complete"
         }
     }
 
-    var method: Moya.Method {
-        switch self {
-        case .verify: return .post
-        default:      return .get
-        }
-    }
+    var method: Moya.Method { .post }
 
     var task: Moya.Task {
         switch self {
-        case let .current(placeId):
-            return .requestParameters(parameters: ["placeId": placeId], encoding: URLEncoding.queryString)
-        case let .verify(missionId, imageData):
-            let photo = MultipartFormData(provider: .data(imageData), name: "photo",
-                                          fileName: "mission.jpg", mimeType: "image/jpeg")
-            let id = MultipartFormData(provider: .data(Data(missionId.utf8)), name: "missionId")
-            return .uploadMultipart([photo, id])
-        case .history:
+        case let .complete(_, body):
+            if let body { return .requestJSONEncodable(body) }
             return .requestPlain
         }
     }
 
-    var headers: [String: String]? {
-        switch self {
-        case .verify: return ["Content-Type": "multipart/form-data"]
-        default:      return ["Content-Type": "application/json"]
-        }
-    }
+    var headers: [String: String]? { ["Content-Type": "application/json"] }
 }

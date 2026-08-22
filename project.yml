@@ -12,6 +12,9 @@ packages:
   Moya:
     url: https://github.com/Moya/Moya
     from: "15.0.0"
+  Alamofire:
+    url: https://github.com/Alamofire/Alamofire
+    from: "5.8.0"
   SnapKit:
     url: https://github.com/SnapKit/SnapKit
     from: "5.7.0"
@@ -36,6 +39,7 @@ targets:
         TARGETED_DEVICE_FAMILY: "1"
     dependencies:
       - package: Moya
+      - package: Alamofire
       - package: SnapKit
       - package: Then
       - package: Kingfisher

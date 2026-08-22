@@ -2,44 +2,57 @@
 //  AuthTargetType.swift
 //  LottoTrip
 //
+//  인증 도메인 엔드포인트.
+//  POST /auth/login·/refresh (인증 불필요), POST /auth/logout, DELETE /auth/me (회원탈퇴)
+//
 
 import Foundation
 import Moya
 
 enum AuthTargetType {
-    case socialLogin(provider: String, token: String)
-    case signup(SignupRequestDTO)
-    case me
+    case login(provider: OAuthProvider, providerToken: String)
+    case refresh(refreshToken: String)
+    case logout
+    case withdraw   // 08-17 신설: DELETE /auth/me 회원탈퇴 (앱스토어 심사 필수)
 }
 
-extension AuthTargetType: TargetType {
-    var baseURL: URL { URL(string: Domain.authURL)! }
+extension AuthTargetType: TargetType, AuthorizedTargetType {
+    var baseURL: URL { URL(string: Domain.baseURL)! }
 
     var path: String {
         switch self {
-        case .socialLogin: return "/login/social"
-        case .signup:      return "/signup"
-        case .me:          return "/me"
+        case .login:    return "\(Domain.auth)/login"
+        case .refresh:  return "\(Domain.auth)/refresh"
+        case .logout:   return "\(Domain.auth)/logout"
+        case .withdraw: return "\(Domain.auth)/me"
         }
     }
 
     var method: Moya.Method {
         switch self {
-        case .me: return .get
-        default:  return .post
+        case .withdraw: return .delete
+        default:        return .post
         }
     }
 
     var task: Moya.Task {
         switch self {
-        case let .socialLogin(provider, token):
-            return .requestParameters(parameters: ["provider": provider, "token": token], encoding: JSONEncoding.default)
-        case let .signup(dto):
-            return .requestJSONEncodable(dto)
-        case .me:
+        case let .login(provider, providerToken):
+            return .requestJSONEncodable(LoginRequestDTO(provider: provider, providerToken: providerToken))
+        case let .refresh(refreshToken):
+            return .requestJSONEncodable(RefreshRequestDTO(refreshToken: refreshToken))
+        case .logout, .withdraw:
             return .requestPlain
         }
     }
 
     var headers: [String: String]? { ["Content-Type": "application/json"] }
+
+    /// login/refresh 는 액세스 토큰 없이 호출, logout·withdraw 는 Authorization 필요
+    var requiresAuth: Bool {
+        switch self {
+        case .login, .refresh:   return false
+        case .logout, .withdraw: return true
+        }
+    }
 }
