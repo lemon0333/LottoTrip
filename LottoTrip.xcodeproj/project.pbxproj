@@ -78,6 +78,7 @@
 		E2101B1231B0128989E98A52 /* PlaceDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBE4D83BD8766A32F613E1B /* PlaceDTO.swift */; };
 		EB6E81688873AC63D141A782 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DF39FC156D02D81B58E753B /* NetworkError.swift */; };
 		EEDF7F89CCEE161E844CF8B7 /* OnboardingSteps.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB6A35D58718F30B5E87E6E7 /* OnboardingSteps.swift */; };
+		F266F2D0120CC169BE64909E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 859C0AC804F25BD7D8291760 /* Assets.xcassets */; };
 		F9CFBD961A3A4CB90BFAE474 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = D212BE3CF5494BFB379846AB /* Kingfisher */; };
 		FA4496BA2F6AA2E598060135 /* BaseScrollViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4468907E63E84EEE0792E47C /* BaseScrollViewController.swift */; };
 		FDE22F6FB66AD64E74DE0D19 /* HealthDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E48B2E78E56C1121D0F230 /* HealthDTO.swift */; };
@@ -122,6 +123,7 @@
 		7C7A50F1407A596BD62A8061 /* DomainEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainEnums.swift; sourceTree = "<group>"; };
 		7DF39FC156D02D81B58E753B /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		8109D257F8AFEEC7587B3A49 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		859C0AC804F25BD7D8291760 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8BDFEB7E3B0B378D9062897B /* ChatWireDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatWireDTO.swift; sourceTree = "<group>"; };
 		8BF9BBECCC33291C96A8B3BA /* PreferenceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceViewController.swift; sourceTree = "<group>"; };
 		8D9AEC4B8617C8AE48B84B49 /* RootTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabBarController.swift; sourceTree = "<group>"; };
@@ -307,6 +309,7 @@
 		7CF9456E037A8C381E7C5487 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				859C0AC804F25BD7D8291760 /* Assets.xcassets */,
 				EF8180C5A81991E305CE18C3 /* Info.plist */,
 			);
 			path = Resources;
@@ -458,6 +461,7 @@
 			buildConfigurationList = 7EC95F372CD8AE5F153884CA /* Build configuration list for PBXNativeTarget "LottoTrip" */;
 			buildPhases = (
 				CB9630BB4C4CA23BA6B62746 /* Sources */,
+				9A0BB95B0D80529C2D814CD5 /* Resources */,
 				AE88A3DA5CF478A56D629CEA /* Frameworks */,
 			);
 			buildRules = (
@@ -512,6 +516,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		9A0BB95B0D80529C2D814CD5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F266F2D0120CC169BE64909E /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		CB9630BB4C4CA23BA6B62746 /* Sources */ = {
