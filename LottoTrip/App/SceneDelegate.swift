@@ -36,6 +36,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         case "complete":       return nav(MissionCompleteViewController())
         case "detail":         return nav(DestinationDetailViewController())
         case "routefind":      return nav(RouteFindViewController())
+        case "my":             return nav(MyPageViewController())
         case "community":      return nav(CommunityFeedViewController())
         case "chat":           return nav(ChatRoomViewController())
         case "shortform":      return nav(ShortformEditorViewController())

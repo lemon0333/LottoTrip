@@ -17,6 +17,10 @@ final class MyPageViewController: BaseScrollViewController {
         avatar.backgroundColor = AppColor.cafe
         avatar.layer.cornerRadius = 32
         avatar.snp.makeConstraints { $0.size.equalTo(64) }
+        // 아바타 이니셜 (닉네임 첫 글자)
+        let initial = UILabel.make("감", font: AppFont.bold(24), color: .white, align: .center)
+        avatar.addSubview(initial)
+        initial.snp.makeConstraints { $0.center.equalToSuperview() }
         let name = UILabel.make("감자탐험가", font: AppFont.bold(18), color: AppColor.ink)
         let sub = UILabel.make("강원 운명 공동체 · 5/8 조각", font: AppFont.medium(13), color: AppColor.sub)
         let nameCol = UIStackView(arrangedSubviews: [name, sub])
@@ -28,17 +32,21 @@ final class MyPageViewController: BaseScrollViewController {
         profile.alignment = .center
         contentStack.addArrangedSubview(profile)
 
-        // 메뉴
+        // 메뉴 — 흰 카드 리스트 (행 사이 구분선)
         let card = CardView(spacing: 0, padding: 4)
-        ["내 코스 기록", "획득 뱃지", "포인트 · 쿠폰", "알림 설정", "로그아웃"].forEach {
-            card.addArranged(menuRow($0))
+        let items = ["내 코스 기록", "획득 뱃지", "포인트 · 쿠폰", "알림 설정", "로그아웃"]
+        for (index, title) in items.enumerated() {
+            // 로그아웃은 코랄 강조
+            card.addArranged(menuRow(title, isAccent: title == "로그아웃"))
+            if index < items.count - 1 { card.addArranged(divider()) }
         }
         contentStack.addArrangedSubview(card)
     }
 
-    private func menuRow(_ title: String) -> UIView {
+    private func menuRow(_ title: String, isAccent: Bool = false) -> UIView {
         let row = UIView()
-        let label = UILabel.make(title, font: AppFont.medium(15), color: AppColor.ink)
+        let color = isAccent ? AppColor.coral : AppColor.ink
+        let label = UILabel.make(title, font: AppFont.medium(15), color: color)
         let chevron = UILabel.make("›", font: AppFont.bold(18), color: AppColor.sub)
         row.addSubview(label)
         row.addSubview(chevron)
@@ -46,5 +54,19 @@ final class MyPageViewController: BaseScrollViewController {
         chevron.snp.makeConstraints { $0.trailing.equalToSuperview().inset(12); $0.centerY.equalToSuperview() }
         row.snp.makeConstraints { $0.height.equalTo(50) }
         return row
+    }
+
+    /// 메뉴 행 구분선 (좌우 12 여백)
+    private func divider() -> UIView {
+        let wrap = UIView()
+        let line = UIView()
+        line.backgroundColor = AppColor.line
+        wrap.addSubview(line)
+        line.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview().inset(12)
+            $0.top.bottom.equalToSuperview()
+            $0.height.equalTo(1)
+        }
+        return wrap
     }
 }

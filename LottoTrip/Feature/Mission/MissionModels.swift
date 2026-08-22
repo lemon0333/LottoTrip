@@ -18,8 +18,8 @@ struct MissionItem {
 
 enum MissionSampleData {
 
-    /// 한글 서수 라벨 (첫/두/세/네 번째 임무)
-    static let ordinals = ["첫", "두", "세", "네"]
+    /// 한글 서수 라벨 (첫/두/세 번째 임무). 개수는 백엔드 기준(장소당 3개).
+    static let ordinals = ["첫", "두", "세"]
 
     static let missions: [MissionItem] = [
         MissionItem(
@@ -44,16 +44,7 @@ enum MissionSampleData {
         MissionItem(
             index: 2, missionId: 103, title: "세 번째 임무",
             narratorLines: [
-                "네 정성이 파도를 타고 내게 닿았느니라.",
-                "이제 바위 곁의 작은 돌 하나를 골라 소원을 얹어 보아라.",
-                "그 돌탑이 무너지지 않도록 조심히 쌓는 모습을 보여 다오."
-            ],
-            guide: "소원을 담아 작은 돌탑을 쌓는 모습 담기.",
-            completed: false),
-        MissionItem(
-            index: 3, missionId: 104, title: "네 번째 임무",
-            narratorLines: [
-                "마지막이니라. 이제 곧 나의 가호가 함께할 것이야.",
+                "네 정성이 파도를 타고 내게 닿았느니라. 마지막이니라.",
                 "노을이 바다를 물들일 때, 두 팔을 활짝 벌려 이 강릉을 품어 보아라.",
                 "그 모습을 담으면 지도의 마지막 조각이 열릴 것이니라."
             ],

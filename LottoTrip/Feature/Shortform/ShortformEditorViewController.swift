@@ -12,12 +12,13 @@ final class ShortformEditorViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(hex: 0x1A1A20)
+        // 앱 공통 라이트 톤: 아이보리 배경 + 잉크 텍스트 + 코랄 강조
+        view.backgroundColor = AppColor.ivory
         navigationItem.title = "숏폼 만들기"
 
-        // 미리보기
+        // 미리보기 — 영상 자체는 자연스럽게 어두운 톤 유지 (다크 라운드 사각형 + ▶)
         let preview = UIView()
-        preview.backgroundColor = UIColor(hex: 0x3A3A44)
+        preview.backgroundColor = UIColor(hex: 0x2B2B2E)
         preview.layer.cornerRadius = 16
         let play = UILabel.make("▶", font: AppFont.bold(26), color: .white, align: .center)
         let cap = UILabel.make("🧙 산신령 더빙 · 아들바위 전설 · 0:14", font: AppFont.medium(12), color: .white)
@@ -26,49 +27,52 @@ final class ShortformEditorViewController: UIViewController {
         play.snp.makeConstraints { $0.center.equalToSuperview() }
         cap.snp.makeConstraints { $0.leading.bottom.equalToSuperview().inset(16) }
 
-        // 타임라인
+        // 타임라인 — 흰 카드 썸네일 (선택된 슬롯만 코랄 강조)
         let timeline = UIStackView()
         timeline.axis = .horizontal
         timeline.spacing = 8
         timeline.distribution = .fillEqually
         ["클립1", "클립2", "슬롯", "클립3"].enumerated().forEach { idx, t in
+            let selected = idx == 2
             let thumb = UIView()
-            thumb.backgroundColor = idx == 2 ? AppColor.coral : UIColor(hex: 0x2E2E36)
+            thumb.backgroundColor = selected ? AppColor.coral : AppColor.card
             thumb.layer.cornerRadius = 8
-            let label = UILabel.make(t, font: AppFont.medium(11), color: .white, align: .center)
+            thumb.layer.borderWidth = 1
+            thumb.layer.borderColor = (selected ? AppColor.coral : AppColor.line).cgColor
+            let label = UILabel.make(t, font: AppFont.medium(11), color: selected ? .white : AppColor.ink, align: .center)
             thumb.addSubview(label)
             label.snp.makeConstraints { $0.center.equalToSuperview() }
             thumb.snp.makeConstraints { $0.height.equalTo(64) }
             timeline.addArrangedSubview(thumb)
         }
 
-        // 옵션 칩
+        // 옵션 칩 — 공통 ChipView 스타일 (선택 시 코랄 채움)
         let options = UIStackView()
         options.axis = .horizontal
         options.spacing = 8
         [("산신령 TTS", true), ("슬롯 애니", true), ("자막", false), ("속도", false)].forEach { t, on in
-            options.addArrangedSubview(darkChip(t, on: on))
+            options.addArrangedSubview(ChipView(text: t, filled: on))
         }
         let optSpacer = UIView(); optSpacer.setContentHuggingPriority(UILayoutPriority(1), for: .horizontal)
         options.addArrangedSubview(optSpacer)
 
-        // AI 카드
+        // AI 카드 — 흰 카드 + 라인 보더
         let aiCard = UIView()
-        aiCard.backgroundColor = UIColor(hex: 0x2E2E36)
+        aiCard.backgroundColor = AppColor.card
         aiCard.layer.cornerRadius = 14
+        aiCard.layer.borderWidth = 1
+        aiCard.layer.borderColor = AppColor.line.cgColor
         let aiTexts = UIStackView(arrangedSubviews: [
-            UILabel.make("AI 자동 믹싱", font: AppFont.bold(15), color: .white),
-            UILabel.make("2~3초 클립 + 슬롯 소스 + AWS Polly TTS", font: AppFont.medium(11), color: UIColor(hex: 0xB8B8C0))
+            UILabel.make("AI 자동 믹싱", font: AppFont.bold(15), color: AppColor.ink),
+            UILabel.make("2~3초 클립 + 슬롯 소스 + AWS Polly TTS", font: AppFont.medium(11), color: AppColor.sub)
         ])
         aiTexts.axis = .vertical
         aiTexts.spacing = 3
-        let toggle = UIView()
-        toggle.backgroundColor = AppColor.lime
-        toggle.layer.cornerRadius = 14
-        let knob = UIView(); knob.backgroundColor = .white; knob.layer.cornerRadius = 11
-        toggle.addSubview(knob)
-        toggle.snp.makeConstraints { $0.size.equalTo(CGSize(width: 46, height: 28)) }
-        knob.snp.makeConstraints { $0.trailing.equalToSuperview().inset(3); $0.centerY.equalToSuperview(); $0.size.equalTo(22) }
+        // 표준 UISwitch (켜짐, 코랄/라임 틴트)
+        let toggle = UISwitch()
+        toggle.isOn = true
+        toggle.onTintColor = AppColor.lime
+        toggle.thumbTintColor = .white
         let aiRow = UIStackView(arrangedSubviews: [aiTexts, toggle])
         aiRow.axis = .horizontal
         aiRow.alignment = .center
@@ -76,8 +80,8 @@ final class ShortformEditorViewController: UIViewController {
         aiCard.addSubview(aiRow)
         aiRow.snp.makeConstraints { $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 14, left: 16, bottom: 14, right: 16)) }
 
-        // 하단 버튼
-        let save = PrimaryButton(title: "임시저장", bg: UIColor(hex: 0x2E2E36), fg: .white)
+        // 하단 버튼 — 임시저장(흰 배경 코랄 보더) / SNS 공유(코랄 채움)
+        let save = PrimaryButton(title: "임시저장", bg: AppColor.card, fg: AppColor.coral, bordered: true)
         let share = PrimaryButton(title: "SNS 공유", bg: AppColor.coral, fg: .white)
         let buttons = UIStackView(arrangedSubviews: [save, share])
         buttons.axis = .horizontal
@@ -98,15 +102,5 @@ final class ShortformEditorViewController: UIViewController {
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
         }
-    }
-
-    private func darkChip(_ text: String, on: Bool) -> UIView {
-        let chip = UIView()
-        chip.backgroundColor = on ? AppColor.coral : UIColor(hex: 0x2E2E36)
-        chip.layer.cornerRadius = 15
-        let label = UILabel.make(text, font: AppFont.medium(13), color: .white)
-        chip.addSubview(label)
-        label.snp.makeConstraints { $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 13, bottom: 8, right: 13)) }
-        return chip
     }
 }

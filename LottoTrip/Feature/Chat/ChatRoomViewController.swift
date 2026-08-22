@@ -52,7 +52,8 @@ final class ChatRoomViewController: UIViewController {
         if msg.isSystem {
             let wrap = UIView()
             let pill = UIView()
-            pill.backgroundColor = UIColor(hex: 0xE0DACF)
+            // 시스템 메시지 알약 배경 — 팔레트(tileEmpty)로 통일
+            pill.backgroundColor = AppColor.tileEmpty
             pill.layer.cornerRadius = 12
             let label = UILabel.make(msg.text, font: AppFont.medium(11), color: AppColor.sub)
             pill.addSubview(label)
