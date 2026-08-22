@@ -28,13 +28,19 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         case "home":       return nav(PuzzleHomeViewController())
         case "slot":       return nav(SlotMachineViewController())
         case "result":     return nav(ResultViewController())
-        case "mission":    return nav(MissionCaptureViewController())
-        case "complete":   return nav(MissionCompleteViewController())
-        case "community":  return nav(CommunityFeedViewController())
-        case "chat":       return nav(ChatRoomViewController())
-        case "shortform":  return nav(ShortformEditorViewController())
-        case "route":      return nav(RouteViewController())
-        case "preference": return nav(PreferenceViewController())
+        case "mission":        return nav(MissionArrivalViewController())   // v2 미션 진입
+        case "missionlist":    return nav(MissionListViewController())
+        case "missiondetail":  return nav(MissionDetailViewController(mission: MissionSampleData.missions[0]))
+        case "allclear":       return nav(MissionAllClearViewController())
+        case "capture":        return nav(MissionCaptureViewController())   // 구버전 보존
+        case "complete":       return nav(MissionCompleteViewController())
+        case "detail":         return nav(DestinationDetailViewController())
+        case "routefind":      return nav(RouteFindViewController())
+        case "community":      return nav(CommunityFeedViewController())
+        case "chat":           return nav(ChatRoomViewController())
+        case "shortform":      return nav(ShortformEditorViewController())
+        case "route":          return nav(RouteViewController())
+        case "preference":     return nav(PreferenceViewController())
         default:           return LoginViewController()
         }
     }

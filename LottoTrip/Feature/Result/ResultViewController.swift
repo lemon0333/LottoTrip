@@ -80,6 +80,8 @@ final class ResultViewController: BaseScrollViewController {
         map.snp.makeConstraints { $0.height.equalTo(170) }
         pin.snp.makeConstraints { $0.size.equalTo(44); $0.centerX.equalToSuperview(); $0.centerY.equalToSuperview().offset(-14) }
         label.snp.makeConstraints { $0.top.equalTo(pin.snp.bottom).offset(8); $0.centerX.equalToSuperview() }
+        // 지도/장소 탭 → 목적지 상세(정보/메뉴/후기)
+        map.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(goDetail)))
         return map
     }
 
@@ -139,7 +141,13 @@ final class ResultViewController: BaseScrollViewController {
         return b
     }
 
-    @objc private func goRoute() { navigationController?.pushViewController(RouteViewController(), animated: true) }
+    @objc private func goRoute() {
+        navigationController?.pushViewController(
+            RouteFindViewController(destinationName: placeName), animated: true)
+    }
+    @objc private func goDetail() {
+        navigationController?.pushViewController(DestinationDetailViewController(), animated: true)
+    }
     @objc private func goShortform() { navigationController?.pushViewController(ShortformEditorViewController(), animated: true) }
 
     /// 코스에 저장 — 슬롯(slotId)을 여행 코스에 추가

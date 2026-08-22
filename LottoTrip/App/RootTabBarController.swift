@@ -21,7 +21,7 @@ final class RootTabBarController: UITabBarController {
             ("홈",     "puzzlepiece.fill",         PuzzleHomeViewController()),
             ("슬롯",   "dice.fill",                SlotMachineViewController()),
             ("공동체", "person.2.fill",            CommunityFeedViewController()),
-            ("미션",   "camera.viewfinder",        MissionCaptureViewController()),
+            ("미션",   "camera.viewfinder",        MissionArrivalViewController()),
             ("MY",     "person.crop.circle.fill",  MyPageViewController())
         ]
 
