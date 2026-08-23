@@ -2,31 +2,55 @@
 //  CourseDTO.swift
 //  LottoTrip
 //
-//  여행 코스 도메인 DTO.
+//  여행 코스 도메인 DTO — 실제 백엔드 계약 기준.
 //  GET /course/items, POST /course/items, DELETE /course/items/{itemId}
 //
 
 import Foundation
 
-/// POST /course/items — 슬롯(SavedSlot)을 코스에 추가. 08-17: resultId→slotId
+/// 코스에서 쓰는 장소 요약 (placeId, name 만)
+struct CoursePlaceDTO: Decodable {
+    let placeId: Int
+    let name: String
+}
+
+/// 코스 항목에 딸린 미션 완료여부
+struct CourseMissionDTO: Decodable {
+    let missionId: Int
+    let completed: Bool
+}
+
+// MARK: - POST /course/items
+
+/// 요청: 슬롯(slotId)을 코스에 추가
 struct AddCourseItemRequestDTO: Encodable {
     let slotId: Int
 }
 
-/// 코스 항목 (ERD course_items) — place 상세 + 미션 완료여부 포함
-struct CourseItemDTO: Decodable {
+/// 추가 응답: { itemId, place, addedAt }
+struct CourseItemResponseDTO: Decodable {
     let itemId: Int
-    let courseId: Int?
-    let slotId: Int?             // 08-17 추가: 어느 슬롯에서 담았는지
-    let placeId: Int
-    let sequence: Int
-    let place: PlaceDTO?
-    let mission: CourseMissionDTO?  // 08-17 추가: items[].mission = {missionId, completed}
+    let place: CoursePlaceDTO
     let addedAt: String?
 }
 
-/// 코스 항목에 딸린 미션 요약 (GET /course/items)
-struct CourseMissionDTO: Decodable {
-    let missionId: Int
-    let completed: Bool
+// MARK: - GET /course/items
+
+/// 조회 응답: { items: [ { itemId, place, mission } ] }
+struct CourseItemsResponseDTO: Decodable {
+    let items: [CourseItemDTO]
+}
+
+struct CourseItemDTO: Decodable {
+    let itemId: Int
+    let place: CoursePlaceDTO
+    let mission: CourseMissionDTO?
+}
+
+// MARK: - DELETE /course/items/{itemId}
+
+/// 삭제 응답: { itemId, deleted }
+struct CourseItemRemoveResponseDTO: Decodable {
+    let itemId: Int
+    let deleted: Bool
 }

@@ -16,15 +16,15 @@ final class CourseService: NetworkManager {
         self.provider = provider
     }
 
-    /// 코스 조회 — 현재 코스에 담긴 목적지 목록
-    func items(completion: @escaping (Result<[CourseItemDTO], NetworkError>) -> Void) {
-        request(target: .items, decodingType: [CourseItemDTO].self, completion: completion)
+    /// 코스 조회 — 현재 코스에 담긴 목적지 목록 ({ items: [...] } 래핑)
+    func items(completion: @escaping (Result<CourseItemsResponseDTO, NetworkError>) -> Void) {
+        request(target: .items, decodingType: CourseItemsResponseDTO.self, completion: completion)
     }
 
     /// 코스에 추가 — 슬롯(slotId)을 코스에 담기
     func add(slotId: Int,
-             completion: @escaping (Result<CourseItemDTO, NetworkError>) -> Void) {
-        request(target: .add(slotId: slotId), decodingType: CourseItemDTO.self, completion: completion)
+             completion: @escaping (Result<CourseItemResponseDTO, NetworkError>) -> Void) {
+        request(target: .add(slotId: slotId), decodingType: CourseItemResponseDTO.self, completion: completion)
     }
 
     /// 코스 항목 삭제

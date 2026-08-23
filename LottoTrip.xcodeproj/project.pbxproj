@@ -75,7 +75,6 @@
 		DD6AB529B207A16FEAC0E393 /* PuzzleHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C820AD10D96C1C8656F3F8 /* PuzzleHomeViewController.swift */; };
 		DEC47B97ED7B6EAEE5510246 /* SlotMachineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA6052912ADE9D492BC448F /* SlotMachineViewController.swift */; };
 		DFBB559A407135A542A9BA2D /* ChatRoomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23B3A5D6A16866CB45FAC6A3 /* ChatRoomViewController.swift */; };
-		E2101B1231B0128989E98A52 /* PlaceDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBE4D83BD8766A32F613E1B /* PlaceDTO.swift */; };
 		EB6E81688873AC63D141A782 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DF39FC156D02D81B58E753B /* NetworkError.swift */; };
 		EEDF7F89CCEE161E844CF8B7 /* OnboardingSteps.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB6A35D58718F30B5E87E6E7 /* OnboardingSteps.swift */; };
 		F266F2D0120CC169BE64909E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 859C0AC804F25BD7D8291760 /* Assets.xcassets */; };
@@ -119,7 +118,6 @@
 		72EA5EEDF66AD688931DB12C /* BearerTokenPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BearerTokenPlugin.swift; sourceTree = "<group>"; };
 		7301A9B51A38B2257DA45B62 /* SlotDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlotDTO.swift; sourceTree = "<group>"; };
 		7886A6CFF8548183DF63DF23 /* MissionAllClearViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionAllClearViewController.swift; sourceTree = "<group>"; };
-		7BBE4D83BD8766A32F613E1B /* PlaceDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceDTO.swift; sourceTree = "<group>"; };
 		7C7A50F1407A596BD62A8061 /* DomainEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainEnums.swift; sourceTree = "<group>"; };
 		7DF39FC156D02D81B58E753B /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		8109D257F8AFEEC7587B3A49 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
@@ -398,7 +396,6 @@
 				7C7A50F1407A596BD62A8061 /* DomainEnums.swift */,
 				27E48B2E78E56C1121D0F230 /* HealthDTO.swift */,
 				59CEA065E5B31E9A756448AF /* MissionDTO.swift */,
-				7BBE4D83BD8766A32F613E1B /* PlaceDTO.swift */,
 				F7E2E7E4479554E4DFA20754 /* PuzzleDTO.swift */,
 				32DAE0EFF73F4F2526F4C8F4 /* RecommendDTO.swift */,
 				B6EDB04106BE259C9BD077DB /* SampleData.swift */,
@@ -579,7 +576,6 @@
 				1CDB5A6FB34BD893046107D9 /* OnboardingStepViewController.swift in Sources */,
 				EEDF7F89CCEE161E844CF8B7 /* OnboardingSteps.swift in Sources */,
 				2918035756B0B64CB6340339 /* OnboardingViews.swift in Sources */,
-				E2101B1231B0128989E98A52 /* PlaceDTO.swift in Sources */,
 				23FEB4D3DA326E99DE9D01B9 /* PlaceDetailModels.swift in Sources */,
 				15B2A9F5DE6F3CBC8B2F9FD4 /* PreferenceViewController.swift in Sources */,
 				D3E73839A9F1478207DB5DE8 /* PuzzleDTO.swift in Sources */,

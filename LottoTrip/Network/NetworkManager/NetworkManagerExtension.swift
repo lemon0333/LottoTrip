@@ -121,12 +121,12 @@ extension NetworkManager {
     /// 응답 바디에 envelope.error 가 있으면 서버 에러로 매핑, 없으면 nil.
     private func serverErrorIfPresent(_ response: Response) -> NetworkError? {
         guard let meta = try? decoder.decode(ApiEnvelopeMeta.self, from: response.data),
-              let body = meta.error else { return nil }
+              !meta.success, let body = meta.error else { return nil }
         return .server(
             code: ErrorCode(code: body.code),
             rawCode: body.code,
             message: body.message,
-            status: meta.status
+            status: response.statusCode   // HTTP status (envelope엔 status 없음)
         )
     }
 

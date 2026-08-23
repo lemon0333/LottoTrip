@@ -31,6 +31,7 @@ public enum ErrorCode: String {
     case verificationFailed  = "MISSION_003"  // 422 위치 인증 실패
     // 영상
     case jobNotFound         = "VIDEO_001"    // 404 렌더링 작업 없음
+    case invalidFileCount    = "VIDEO_002"    // 400 업로드 파일 개수 초과
     // 채팅
     case notRoomMember       = "CHAT_001"     // 403 채팅방 멤버 아님
     case roomNotFound        = "CHAT_002"     // 404 채팅방 없음
@@ -59,6 +60,7 @@ public enum ErrorCode: String {
         case .alreadyCompleted:     return "이미 완료된 미션입니다."
         case .verificationFailed:   return "위치 인증에 실패했습니다."
         case .jobNotFound:          return "렌더링 작업을 찾을 수 없습니다."
+        case .invalidFileCount:     return "업로드 가능한 파일 개수를 벗어났습니다."
         case .notRoomMember:        return "채팅방 멤버가 아닙니다."
         case .roomNotFound:         return "채팅방을 찾을 수 없습니다."
         case .unknown:              return "알 수 없는 오류가 발생했습니다."

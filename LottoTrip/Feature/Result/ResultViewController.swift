@@ -12,10 +12,10 @@ final class ResultViewController: BaseScrollViewController {
 
     private let dest = SampleData.destination
 
-    /// 슬롯 draw/result 로 받은 실제 서버 결과 (없으면 SampleData 로 표시)
-    private let result: SavedSlotDTO?
+    /// 슬롯 draw 로 받은 실제 서버 결과 (없으면 SampleData 로 표시)
+    private let result: SlotDrawResponseDTO?
 
-    init(result: SavedSlotDTO? = nil) {
+    init(result: SlotDrawResponseDTO? = nil) {
         self.result = result
         super.init(nibName: nil, bundle: nil)
     }
@@ -25,16 +25,17 @@ final class ResultViewController: BaseScrollViewController {
 
     private var placeName: String { result?.place.name ?? dest.name }
     private var categoryText: String {
-        // 08-17: category 는 TourAPI cat2 한글명 문자열 그대로 표시
-        if let category = result?.place.category, category != "UNKNOWN" { return category }
+        // category 는 백엔드 한글 displayName 문자열 그대로 표시
+        if let category = result?.place.category, !category.isEmpty, category != "UNKNOWN" { return category }
         return dest.category
     }
     private var locationText: String {
-        if let address = result?.place.address, !address.isEmpty { return address }
+        // draw 응답엔 주소가 없으므로(상세조회에만 있음) 카테고리·지역 느낌으로 표시
+        if let category = result?.place.category, !category.isEmpty { return "TourAPI · \(category)" }
         return "TourAPI · 강원 강릉시"
     }
     private var metaLine: String {
-        if let tier = result?.place.budgetTier { return "예산 \(Self.budgetLabel(tier))" }
+        if let km = result?.place.distanceKm { return "거리 \(Int(km.rounded()))km" }
         return "예산 ~\(dest.budget / 10000)만원"
     }
     private var missionTitle: String { result?.mission?.title ?? dest.missionTitle }

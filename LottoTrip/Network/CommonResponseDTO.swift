@@ -2,19 +2,17 @@
 //  CommonResponseDTO.swift
 //  LottoTrip
 //
-//  API 명세서 "공통 Response" 형식.
+//  공통 응답 형식 (실제 백엔드 yoonaji/lottotrip_be 기준).
 //
-//  성공:
-//    { "status": 200, "data": {...}, "error": null }
-//  실패:
-//    { "status": 401, "data": null, "error": { "code": "AUTH_002", "message": "..." } }
+//  성공: { "success": true,  "data": {...}, "error": null }
+//  실패: { "success": false, "data": null, "error": { "code": "AUTH_002", "message": "..." } }
 //
 
 import Foundation
 
 /// 최상위 공통 응답 래퍼
 public struct ApiResponse<T: Decodable>: Decodable {
-    public let status: Int
+    public let success: Bool
     public let data: T?
     public let error: ApiErrorBody?
 }
@@ -25,10 +23,10 @@ public struct ApiErrorBody: Decodable {
     public let message: String
 }
 
-/// data 타입 무관하게 status/error 만 뽑아내는 경량 메타 디코더.
+/// data 타입 무관하게 success/error 만 뽑아내는 경량 메타 디코더.
 /// (에러 응답은 data 가 null 이라 `ApiResponse<T>` 디코딩이 실패할 수 있어 별도 사용)
 public struct ApiEnvelopeMeta: Decodable {
-    public let status: Int
+    public let success: Bool
     public let error: ApiErrorBody?
 }
 

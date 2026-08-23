@@ -33,7 +33,8 @@ final class SlotMachineViewController: UIViewController {
     private enum Phase { case ready, drawing, won }
 
     /// 취향 설정값 — 온보딩(TripPreferenceStore)에서 읽어오고, 없으면 기본값.
-    var budget: BudgetLevel { TripPreferenceStore.shared.current.budgetLevel }
+    /// budget 은 백엔드 계약상 "원 정수". 미입력 시 10만원 기본.
+    var budgetWon: Int { max(TripPreferenceStore.shared.current.budgetWon, 100_000) }
     var transport: TransportType { TripPreferenceStore.shared.current.transport?.transportType ?? .car }
 
     private let titleLabel = UILabel.make("나만의 여행 퍼즐이\n준비됐어요!", font: AppFont.bold(24), color: AppColor.ink, align: .center)
@@ -47,7 +48,7 @@ final class SlotMachineViewController: UIViewController {
     private let confirmButton = PrimaryButton(title: "눌러서 확인")
     private let againButton = UIButton(type: .system)
 
-    private var drawnResult: SavedSlotDTO?
+    private var drawnResult: SlotDrawResponseDTO?
     private var phase: Phase = .ready
 
     private let columns = 4
@@ -174,7 +175,7 @@ final class SlotMachineViewController: UIViewController {
             guard let self else { return }
             APIClient.shared.slot.draw(
                 latitude: coordinate.latitude, longitude: coordinate.longitude,
-                budget: self.budget, transport: self.transport
+                budget: self.budgetWon, transport: self.transport
             ) { [weak self] outcome in
                 guard let self else { return }
                 // 응답이 빨라도 최소 1.2초 뽑기 연출 유지 (draw 평균 4.6s 대비 커버)

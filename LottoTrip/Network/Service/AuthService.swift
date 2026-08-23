@@ -29,8 +29,8 @@ final class AuthService: NetworkManager {
         }
     }
 
-    /// 액세스 토큰 재발급 (성공 시 토큰 저장)
-    func refresh(completion: @escaping (Result<TokenDTO, NetworkError>) -> Void) {
+    /// 액세스 토큰 재발급 (성공 시 액세스 토큰만 갱신 — 서버가 refreshToken 은 재발급하지 않음)
+    func refresh(completion: @escaping (Result<RefreshResponseDTO, NetworkError>) -> Void) {
         guard let refreshToken = TokenStore.refreshToken, !refreshToken.isEmpty else {
             completion(.failure(.server(code: .invalidRefreshToken,
                                         rawCode: ErrorCode.invalidRefreshToken.rawValue,
@@ -39,9 +39,9 @@ final class AuthService: NetworkManager {
             return
         }
         request(target: .refresh(refreshToken: refreshToken),
-                decodingType: TokenDTO.self) { result in
+                decodingType: RefreshResponseDTO.self) { result in
             if case let .success(dto) = result {
-                TokenStore.save(accessToken: dto.accessToken, refreshToken: dto.refreshToken)
+                TokenStore.accessToken = dto.accessToken
             }
             completion(result)
         }

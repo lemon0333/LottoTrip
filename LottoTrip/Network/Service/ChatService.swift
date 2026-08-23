@@ -17,9 +17,9 @@ final class ChatService: NetworkManager {
         self.provider = provider
     }
 
-    /// 채팅방 목록 조회 — 내가 배정된 운명 공동체 방
-    func rooms(completion: @escaping (Result<[ChatRoomSummaryDTO], NetworkError>) -> Void) {
-        request(target: .rooms, decodingType: [ChatRoomSummaryDTO].self, completion: completion)
+    /// 채팅방 목록 조회 — 내가 배정된 운명 공동체 방 ({ rooms: [...] })
+    func rooms(completion: @escaping (Result<ChatRoomListDTO, NetworkError>) -> Void) {
+        request(target: .rooms, decodingType: ChatRoomListDTO.self, completion: completion)
     }
 
     /// 채팅 이력 조회 — 특정 방의 지난 메시지 (커서 페이징)
