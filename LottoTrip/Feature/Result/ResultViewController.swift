@@ -50,7 +50,7 @@ final class ResultViewController: BaseScrollViewController {
         contentStack.addArrangedSubview(missionBadge())
 
         let actions = UIStackView(arrangedSubviews: [
-            makeButton("길찾기", bg: AppColor.coral, fg: .white, action: #selector(goRoute)),
+            makeButton("길찾기", bg: AppColor.ink, fg: .white, action: #selector(goRoute)),
             makeButton("코스에 저장", bg: .white, fg: AppColor.coral, bordered: true, action: #selector(save))
         ])
         actions.axis = .horizontal

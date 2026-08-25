@@ -28,6 +28,26 @@ final class PuzzleChip: UIView {
     }
 }
 
+/// 검정 원형 버튼 (뽑기 / 한 번 더) — 치수 가이드 기준.
+final class CircleButton: UIButton {
+    init(title: String) {
+        super.init(frame: .zero)
+        backgroundColor = AppColor.ink
+        setAttributedTitle(NSAttributedString(string: title, attributes: [
+            .font: AppFont.semibold(17), .foregroundColor: UIColor.white, .kern: -0.5
+        ]), for: .normal)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        layer.cornerRadius = bounds.height / 2
+    }
+    func setEnabledLook(_ on: Bool) {
+        isEnabled = on
+        backgroundColor = on ? AppColor.ink : AppColor.tileEmpty
+    }
+}
+
 final class SlotMachineViewController: UIViewController {
 
     private enum Phase { case ready, drawing, won }
@@ -37,16 +57,15 @@ final class SlotMachineViewController: UIViewController {
     var budgetWon: Int { max(TripPreferenceStore.shared.current.budgetWon, 100_000) }
     var transport: TransportType { TripPreferenceStore.shared.current.transport?.transportType ?? .car }
 
-    private let titleLabel = UILabel.make("나만의 여행 퍼즐이\n준비됐어요!", font: AppFont.bold(24), color: AppColor.ink, align: .center)
+    private let titleLabel = UILabel.make("나만의 여행 퍼즐이\n준비됐어요!", font: AppFont.semibold(24), color: AppColor.ink, align: .center)
     private let gridView = UIView()
     private var chips: [PuzzleChip] = []
-    private let drawButton = PrimaryButton(title: "뽑기")
+    private let drawButton = CircleButton(title: "뽑기")
 
     // 당첨 오버레이
     private let overlay = UIView()
     private let wonChip = PuzzleChip()
-    private let confirmButton = PrimaryButton(title: "눌러서 확인")
-    private let againButton = UIButton(type: .system)
+    private let againButton = CircleButton(title: "한 번 더")
 
     private var drawnResult: SlotDrawResponseDTO?
     private var phase: Phase = .ready
@@ -62,17 +81,24 @@ final class SlotMachineViewController: UIViewController {
         buildGrid()
         drawButton.addTarget(self, action: #selector(drawTapped), for: .touchUpInside)
 
-        let stack = UIStackView(arrangedSubviews: [titleLabel, gridView, drawButton])
+        let stack = UIStackView(arrangedSubviews: [titleLabel, gridView])
         stack.axis = .vertical
         stack.alignment = .fill
         stack.spacing = 28
-        stack.setCustomSpacing(36, after: gridView)
         view.addSubview(stack)
         stack.snp.makeConstraints {
-            $0.center.equalTo(view.safeAreaLayoutGuide)
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(40)
             $0.leading.trailing.equalToSuperview().inset(28)
         }
         gridView.snp.makeConstraints { $0.height.equalTo(gridView.snp.width).multipliedBy(CGFloat(rows) / CGFloat(columns)) }
+
+        // 뽑기 = 검정 원형 버튼 (하단 중앙)
+        view.addSubview(drawButton)
+        drawButton.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(36)
+            $0.size.equalTo(112)
+        }
 
         buildOverlay()
 
@@ -119,10 +145,12 @@ final class SlotMachineViewController: UIViewController {
         view.addSubview(overlay)
         overlay.snp.makeConstraints { $0.edges.equalToSuperview() }
 
-        let wonTitle = UILabel.make("운명의 목적지 당첨!", font: AppFont.bold(24), color: AppColor.ink, align: .center)
+        let wonTitle = UILabel.make("운명의 목적지 당첨!", font: AppFont.semibold(24), color: AppColor.ink, align: .center)
         wonChip.setWon(true)
+        wonChip.transform = CGAffineTransform(rotationAngle: 12 * .pi / 180)   // 치수: 회전 12°
         let hint = UILabel.make("눌러서 확인", font: AppFont.medium(13), color: AppColor.sub, align: .center)
 
+        // 카드 자체를 탭하면 확인 (치수 가이드: 카드 안 "눌러서 확인")
         let card = UIView()
         card.backgroundColor = .white
         card.layer.cornerRadius = 20
@@ -133,32 +161,34 @@ final class SlotMachineViewController: UIViewController {
         card.addSubview(wonChip)
         card.addSubview(hint)
         wonChip.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(28)
+            $0.top.equalToSuperview().offset(32)
             $0.centerX.equalToSuperview()
             $0.width.height.equalTo(120)
         }
         hint.snp.makeConstraints {
-            $0.top.equalTo(wonChip.snp.bottom).offset(10)
+            $0.top.equalTo(wonChip.snp.bottom).offset(14)
             $0.centerX.equalToSuperview()
             $0.bottom.equalToSuperview().inset(24)
         }
-        let cardTap = UITapGestureRecognizer(target: self, action: #selector(confirmTapped))
-        card.addGestureRecognizer(cardTap)
+        card.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(confirmTapped)))
 
-        confirmButton.addTarget(self, action: #selector(confirmTapped), for: .touchUpInside)
-        againButton.setAttributedTitle(NSAttributedString(string: "한 번 더",
-            attributes: [.font: AppFont.bold(16), .foregroundColor: AppColor.coral]), for: .normal)
+        // 한 번 더 = 검정 원형
         againButton.addTarget(self, action: #selector(againTapped), for: .touchUpInside)
 
-        let stack = UIStackView(arrangedSubviews: [wonTitle, card, confirmButton, againButton])
+        let stack = UIStackView(arrangedSubviews: [wonTitle, card])
         stack.axis = .vertical
         stack.alignment = .fill
-        stack.spacing = 20
-        stack.setCustomSpacing(28, after: card)
+        stack.spacing = 24
         overlay.addSubview(stack)
+        overlay.addSubview(againButton)
         stack.snp.makeConstraints {
-            $0.center.equalTo(overlay.safeAreaLayoutGuide)
+            $0.centerY.equalTo(overlay.safeAreaLayoutGuide).offset(-40)
             $0.leading.trailing.equalToSuperview().inset(40)
+        }
+        againButton.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalTo(overlay.safeAreaLayoutGuide).inset(36)
+            $0.size.equalTo(112)
         }
     }
 
@@ -167,8 +197,7 @@ final class SlotMachineViewController: UIViewController {
     @objc private func drawTapped() {
         guard phase == .ready else { return }
         phase = .drawing
-        drawButton.isEnabled = false
-        drawButton.alpha = 0.5
+        drawButton.setEnabledLook(false)
         startShuffle()
 
         LocationProvider.shared.current { [weak self] coordinate in
@@ -231,8 +260,7 @@ final class SlotMachineViewController: UIViewController {
     private func resetToReady() {
         chips.forEach { $0.setWon(false) }
         phase = .ready
-        drawButton.isEnabled = true
-        drawButton.alpha = 1
+        drawButton.setEnabledLook(true)
     }
 
     // MARK: - 헬퍼

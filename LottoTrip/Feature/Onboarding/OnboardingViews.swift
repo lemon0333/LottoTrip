@@ -134,9 +134,11 @@ final class ConfirmCheckButton: UIButton {
 // MARK: - 자음 배지 (ㄱ/ㄴ/…)
 
 final class LetterBadge: UIView {
+    /// 치수 가이드: 스타일 배지는 초록(mint)
+    static let mint = UIColor(hex: 0x6FBF9E)
     init(_ text: String) {
         super.init(frame: .zero)
-        backgroundColor = AppColor.coral
+        backgroundColor = LetterBadge.mint
         layer.cornerRadius = 13
         let label = UILabel.make(text, font: AppFont.bold(13), color: .white, align: .center)
         addSubview(label)

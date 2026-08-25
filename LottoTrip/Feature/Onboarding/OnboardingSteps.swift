@@ -85,8 +85,10 @@ final class StyleRow: UIControl {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     func setSelected(_ on: Bool) {
-        layer.borderColor = (on ? AppColor.coral : AppColor.line).cgColor
+        // 치수 가이드: 선택=초록 테두리, 미선택=투명도 80%
+        layer.borderColor = (on ? LetterBadge.mint : AppColor.line).cgColor
         layer.borderWidth = on ? 2 : 1.5
+        alpha = on ? 1.0 : 0.8
     }
 }
 
