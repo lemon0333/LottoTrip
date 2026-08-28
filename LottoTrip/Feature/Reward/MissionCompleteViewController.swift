@@ -46,9 +46,25 @@ final class MissionCompleteViewController: BaseScrollViewController {
         contentStack.addArrangedSubview(card)
 
         let brag = PrimaryButton(title: "운명 공동체에 자랑하기")
+        brag.addTarget(self, action: #selector(bragTapped), for: .touchUpInside)
         contentStack.addArrangedSubview(brag)
         let next = PrimaryButton(title: "다음 SPIN 돌리기", bg: .white, fg: AppColor.coral, bordered: true)
+        next.addTarget(self, action: #selector(nextTapped), for: .touchUpInside)
         contentStack.addArrangedSubview(next)
+    }
+
+    // 자랑하기 → 운명 공동체 피드로 이동
+    @objc private func bragTapped() {
+        navigationController?.pushViewController(CommunityFeedViewController(), animated: true)
+    }
+
+    // 다음 SPIN → 가호(리워드) 확인 알림 후 지도(루트)로 복귀
+    @objc private func nextTapped() {
+        let alert = UIAlertController(title: nil, message: "가호를 받았어요! 지도에 새 조각이 열렸어요.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default) { [weak self] _ in
+            self?.navigationController?.popToRootViewController(animated: true)
+        })
+        present(alert, animated: true)
     }
 
     private func beforeAfter() -> UIStackView {

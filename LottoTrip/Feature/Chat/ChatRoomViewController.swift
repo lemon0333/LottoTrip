@@ -13,6 +13,11 @@ final class ChatRoomViewController: UIViewController {
     private let scrollView = UIScrollView()
     private let messageStack = UIStackView()
     private let inputBar = UIView()
+    // 입력 필드 + 전송 버튼 (실제 전송처럼 동작)
+    private let textField = UITextField()
+    private let sendButton = UIButton(type: .system)
+    // 내가 보낸 메시지에 붙일 임시 id 카운터
+    private var sentCount = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -93,14 +98,53 @@ final class ChatRoomViewController: UIViewController {
         inputBar.layer.cornerRadius = 26
         inputBar.layer.borderWidth = 1
         inputBar.layer.borderColor = AppColor.line.cgColor
-        let placeholder = UILabel.make("메시지 입력...", font: AppFont.regular(14), color: AppColor.sub)
-        let send = UIButton(type: .system)
-        send.backgroundColor = AppColor.coral
-        send.layer.cornerRadius = 18
-        send.setAttributedTitle(NSAttributedString(string: "↑", attributes: [.font: AppFont.bold(16), .foregroundColor: UIColor.white]), for: .normal)
-        inputBar.addSubview(placeholder)
-        inputBar.addSubview(send)
-        placeholder.snp.makeConstraints { $0.leading.equalToSuperview().inset(16); $0.centerY.equalToSuperview() }
-        send.snp.makeConstraints { $0.trailing.equalToSuperview().inset(8); $0.centerY.equalToSuperview(); $0.size.equalTo(36) }
+
+        // 플레이스홀더 라벨 대신 실제 입력 가능한 UITextField 사용
+        textField.font = AppFont.regular(14)
+        textField.textColor = AppColor.ink
+        textField.attributedPlaceholder = NSAttributedString(
+            string: "메시지 입력...",
+            attributes: [.font: AppFont.regular(14), .foregroundColor: AppColor.sub]
+        )
+        textField.returnKeyType = .send
+        textField.enablesReturnKeyAutomatically = true
+        // 리턴 키(전송) 입력 시에도 전송 처리
+        textField.addTarget(self, action: #selector(sendTapped), for: .editingDidEndOnExit)
+
+        sendButton.backgroundColor = AppColor.coral
+        sendButton.layer.cornerRadius = 18
+        sendButton.setAttributedTitle(NSAttributedString(string: "↑", attributes: [.font: AppFont.bold(16), .foregroundColor: UIColor.white]), for: .normal)
+        sendButton.addTarget(self, action: #selector(sendTapped), for: .touchUpInside)
+
+        inputBar.addSubview(textField)
+        inputBar.addSubview(sendButton)
+        sendButton.snp.makeConstraints { $0.trailing.equalToSuperview().inset(8); $0.centerY.equalToSuperview(); $0.size.equalTo(36) }
+        textField.snp.makeConstraints {
+            $0.leading.equalToSuperview().inset(16)
+            $0.trailing.equalTo(sendButton.snp.leading).offset(-8)
+            $0.centerY.equalToSuperview()
+        }
+    }
+
+    // 전송 — 입력값이 있으면 내 말풍선을 새로 추가하고 필드를 비운다
+    @objc private func sendTapped() {
+        let text = (textField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else { return }
+
+        sentCount += 1
+        let msg = ChatMessageDTO(id: "me-\(sentCount)", sender: "나", text: text, isMine: true, isSystem: false)
+        messageStack.addArrangedSubview(messageView(msg))
+        textField.text = ""
+
+        // 새 메시지가 보이도록 맨 아래로 스크롤
+        scrollToBottom()
+    }
+
+    private func scrollToBottom() {
+        // 방금 추가한 뷰의 레이아웃을 확정한 뒤 하단으로 이동
+        scrollView.layoutIfNeeded()
+        let bottom = scrollView.contentSize.height - scrollView.bounds.height + scrollView.contentInset.bottom
+        guard bottom > 0 else { return }
+        scrollView.setContentOffset(CGPoint(x: 0, y: bottom), animated: true)
     }
 }

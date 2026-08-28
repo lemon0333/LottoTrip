@@ -43,17 +43,47 @@ final class MyPageViewController: BaseScrollViewController {
         contentStack.addArrangedSubview(card)
     }
 
+    /// 탭 가능한 메뉴 행 (누르면 하이라이트 + 동작)
     private func menuRow(_ title: String, isAccent: Bool = false) -> UIView {
-        let row = UIView()
+        let row = UIControl()
         let color = isAccent ? AppColor.coral : AppColor.ink
         let label = UILabel.make(title, font: AppFont.medium(15), color: color)
         let chevron = UILabel.make("›", font: AppFont.bold(18), color: AppColor.sub)
-        row.addSubview(label)
-        row.addSubview(chevron)
+        [label, chevron].forEach { $0.isUserInteractionEnabled = false; row.addSubview($0) }
         label.snp.makeConstraints { $0.leading.equalToSuperview().inset(12); $0.centerY.equalToSuperview() }
         chevron.snp.makeConstraints { $0.trailing.equalToSuperview().inset(12); $0.centerY.equalToSuperview() }
         row.snp.makeConstraints { $0.height.equalTo(50) }
+
+        // 누름 하이라이트
+        row.addAction(UIAction { _ in row.backgroundColor = AppColor.line.withAlphaComponent(0.3) }, for: .touchDown)
+        let clear = UIAction { _ in UIView.animate(withDuration: 0.15) { row.backgroundColor = .clear } }
+        row.addAction(clear, for: .touchUpInside)
+        row.addAction(clear, for: .touchUpOutside)
+        row.addAction(clear, for: .touchCancel)
+
+        // 동작
+        row.addAction(UIAction { [weak self] _ in
+            if title == "로그아웃" { self?.confirmLogout() } else { self?.comingSoon(title) }
+        }, for: .touchUpInside)
         return row
+    }
+
+    private func confirmLogout() {
+        let alert = UIAlertController(title: "로그아웃", message: "로그아웃 하시겠어요?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel))
+        alert.addAction(UIAlertAction(title: "로그아웃", style: .destructive) { _ in
+            APIClient.shared.auth.logout { _ in
+                TokenStore.clear()   // 서버 실패와 무관하게 로컬 로그아웃
+                SceneDelegate.switchRoot(to: LoginViewController())
+            }
+        })
+        present(alert, animated: true)
+    }
+
+    private func comingSoon(_ title: String) {
+        let alert = UIAlertController(title: title, message: "준비 중인 기능이에요.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        present(alert, animated: true)
     }
 
     /// 메뉴 행 구분선 (좌우 12 여백)
