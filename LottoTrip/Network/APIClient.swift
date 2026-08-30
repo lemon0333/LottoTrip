@@ -23,6 +23,7 @@ final class APIClient {
     let auth    = AuthService()
     let slot    = SlotService()
     let course  = CourseService()
+    let route   = RouteService()
     let mission = MissionService()
     let video   = VideoService()
     let chat    = ChatService()

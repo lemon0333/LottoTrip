@@ -16,14 +16,16 @@ struct UploadUrlRequestDTO: Encodable {
     let contentType: String   // "video/mp4" 등
 }
 
-/// 발급된 Presigned URL 목록
+/// 발급된 Presigned URL 목록 (배포 스펙: { uploads: [...] })
 struct UploadUrlsResponseDTO: Decodable {
-    let urls: [PresignedUrlDTO]
+    let uploads: [UploadItemDTO]
 }
 
-struct PresignedUrlDTO: Decodable {
+struct UploadItemDTO: Decodable {
+    let order: Int          // 클립 순번
     let uploadUrl: String   // 프론트 → S3 PUT 대상
-    let fileKey: String     // 렌더 요청 시 clips 로 넘길 키/URL
+    let clipUrl: String     // 렌더 요청 시 clips 로 넘길 URL
+    let expiresIn: Int?     // 만료(초)
 }
 
 // MARK: - 렌더링 요청/상태

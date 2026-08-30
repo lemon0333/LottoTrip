@@ -10,10 +10,10 @@ import Foundation
 
 public enum Domain {
     /// 공통 베이스 URL.
-    /// 기본값은 운영 도메인이며, `API_BASE_URL` 환경변수로 오버라이드 가능
-    /// (로컬 목 서버/스테이징 전환용 — 예: http://localhost:8080/api/v1)
+    /// 기본값 = 배포된 개발 서버(3.37.104.92). `API_BASE_URL` 환경변수로 오버라이드 가능
+    /// (로컬 목 서버 전환용 — 예: http://localhost:8080/api/v1)
     public static let baseURL: String =
-        ProcessInfo.processInfo.environment["API_BASE_URL"] ?? "https://api.lottotrip.com/api/v1"
+        ProcessInfo.processInfo.environment["API_BASE_URL"] ?? "http://3.37.104.92/api/v1"
 
     // 도메인별 prefix (TargetType.path 조합용)
     public static let auth      = "/auth"       // 인증

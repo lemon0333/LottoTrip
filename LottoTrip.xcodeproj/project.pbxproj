@@ -13,10 +13,12 @@
 		0EC844545E27E9B661B30CD5 /* MissionListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1FE31D6459E9E8D732730D /* MissionListViewController.swift */; };
 		15B2A9F5DE6F3CBC8B2F9FD4 /* PreferenceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF9BBECCC33291C96A8B3BA /* PreferenceViewController.swift */; };
 		1763CD1DFBA157F57C3600A6 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABCDFC4A467EE2396E85027 /* Components.swift */; };
+		1BE4BC99F60D6CFFC5E0F997 /* RouteDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE265568CFF182E1CC7C4568 /* RouteDTO.swift */; };
 		1BF8AF245F496AE36C3A3A4F /* CommunityFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 411D8DDF02A5953EF76A7C65 /* CommunityFeedViewController.swift */; };
 		1CDB5A6FB34BD893046107D9 /* OnboardingStepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8DC7DD0FB86A1BC9A5D183 /* OnboardingStepViewController.swift */; };
 		219329BF579DEB53826C570F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC492BAB7B2FDB1408561186 /* AppDelegate.swift */; };
 		227826C463C62059CAC79AD5 /* Domain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF7D7E10CEA5B88F2D0CE6B /* Domain.swift */; };
+		23BBC1383B02C78B4DF59830 /* RouteService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6F4DD2B85FC7916BBAD941C /* RouteService.swift */; };
 		23FEB4D3DA326E99DE9D01B9 /* PlaceDetailModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00DC7E83C489DC5B2D54F40D /* PlaceDetailModels.swift */; };
 		27C907605B5904B4259150DB /* ChatTargetType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00396A0CA8410053CCB8F70B /* ChatTargetType.swift */; };
 		2918035756B0B64CB6340339 /* OnboardingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7586339FAD149310C135D3 /* OnboardingViews.swift */; };
@@ -68,6 +70,7 @@
 		C31863614B7BCF8EC4088E42 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6EB262DDA2FFD6C64AE615E /* SceneDelegate.swift */; };
 		C76CB99509A1CF541D248061 /* WantedSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5AEE153BD3C2F52DEEAFFC49 /* WantedSans-SemiBold.ttf */; };
 		CB1D841A2CADA6562069BCD1 /* CourseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EE7B6B0E3020B7CB731969 /* CourseService.swift */; };
+		CEC1A614A88294E627D6C356 /* RouteTargetType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660B9463991C419DF3A185C6 /* RouteTargetType.swift */; };
 		D0D9F9F3C1DE115C347DD035 /* AuthTargetType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D86C9522449763F82D91B289 /* AuthTargetType.swift */; };
 		D2B5E1987CD9CDEDD6B80098 /* NetworkManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 119935C8853E7F9F5A03F3EE /* NetworkManagerProtocol.swift */; };
 		D3E73839A9F1478207DB5DE8 /* PuzzleDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E2E7E4479554E4DFA20754 /* PuzzleDTO.swift */; };
@@ -119,6 +122,7 @@
 		59CEA065E5B31E9A756448AF /* MissionDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionDTO.swift; sourceTree = "<group>"; };
 		5AEE153BD3C2F52DEEAFFC49 /* WantedSans-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WantedSans-SemiBold.ttf"; sourceTree = "<group>"; };
 		5BCE30B64CBD8E3DF568F577 /* HealthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthService.swift; sourceTree = "<group>"; };
+		660B9463991C419DF3A185C6 /* RouteTargetType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteTargetType.swift; sourceTree = "<group>"; };
 		66D875F0F8081BBDB9927314 /* LottoTrip.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = LottoTrip.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E1644B77D466EC81736EB0A /* AuthDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthDTO.swift; sourceTree = "<group>"; };
 		6F08DD6CF611C8C901B82121 /* SquarePuzzleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquarePuzzleView.swift; sourceTree = "<group>"; };
@@ -153,8 +157,10 @@
 		D4E78723E37B2FCE3344BB9A /* MyPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPageViewController.swift; sourceTree = "<group>"; };
 		D6AD284811036287D89B3322 /* DestinationDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationDetailViewController.swift; sourceTree = "<group>"; };
 		D6EB262DDA2FFD6C64AE615E /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		D6F4DD2B85FC7916BBAD941C /* RouteService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteService.swift; sourceTree = "<group>"; };
 		D86C9522449763F82D91B289 /* AuthTargetType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTargetType.swift; sourceTree = "<group>"; };
 		D9DFA7AF1F3021B450429981 /* ResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultViewController.swift; sourceTree = "<group>"; };
+		DE265568CFF182E1CC7C4568 /* RouteDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteDTO.swift; sourceTree = "<group>"; };
 		E0B13232607868F90273386F /* MissionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionModels.swift; sourceTree = "<group>"; };
 		E47C59EA33D9AEC97CE4D561 /* SlotTargetType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlotTargetType.swift; sourceTree = "<group>"; };
 		E87FBA527292DC03D10D2DD9 /* MissionCompleteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionCompleteViewController.swift; sourceTree = "<group>"; };
@@ -346,6 +352,7 @@
 				A6EE7B6B0E3020B7CB731969 /* CourseService.swift */,
 				5BCE30B64CBD8E3DF568F577 /* HealthService.swift */,
 				B07C478018B5521C6860062F /* MissionService.swift */,
+				D6F4DD2B85FC7916BBAD941C /* RouteService.swift */,
 				3EA2A2537240873C7A9EFF30 /* SlotService.swift */,
 				1BF72953E8AB3DE0FB42A001 /* VideoService.swift */,
 			);
@@ -360,6 +367,7 @@
 				A048E610267E2541A63405C5 /* CourseTargetType.swift */,
 				1A0CE7B376F21AF9D252F934 /* HealthTargetType.swift */,
 				BCF86343D78581904B9ED9E0 /* MissionTargetType.swift */,
+				660B9463991C419DF3A185C6 /* RouteTargetType.swift */,
 				E47C59EA33D9AEC97CE4D561 /* SlotTargetType.swift */,
 				2F9A84DD7C1506757405A86D /* VideoTargetType.swift */,
 			);
@@ -407,6 +415,7 @@
 				59CEA065E5B31E9A756448AF /* MissionDTO.swift */,
 				F7E2E7E4479554E4DFA20754 /* PuzzleDTO.swift */,
 				32DAE0EFF73F4F2526F4C8F4 /* RecommendDTO.swift */,
+				DE265568CFF182E1CC7C4568 /* RouteDTO.swift */,
 				B6EDB04106BE259C9BD077DB /* SampleData.swift */,
 				7301A9B51A38B2257DA45B62 /* SlotDTO.swift */,
 				1FF2D420C15A8CD456E8DC30 /* UserMissionDTO.swift */,
@@ -608,7 +617,10 @@
 				08583BA4DF00C7CA3EEBD267 /* RecommendDTO.swift in Sources */,
 				6CC2D0677FBDC5EA0537A204 /* ResultViewController.swift in Sources */,
 				86144D60C8E2145B32B6B5B0 /* RootTabBarController.swift in Sources */,
+				1BE4BC99F60D6CFFC5E0F997 /* RouteDTO.swift in Sources */,
 				039B322EF5FA1D38DA96B18E /* RouteFindViewController.swift in Sources */,
+				23BBC1383B02C78B4DF59830 /* RouteService.swift in Sources */,
+				CEC1A614A88294E627D6C356 /* RouteTargetType.swift in Sources */,
 				48263E8BD659400B66C646E0 /* RouteViewController.swift in Sources */,
 				83BCB4A1B8F18C818ED22F72 /* SampleData.swift in Sources */,
 				C31863614B7BCF8EC4088E42 /* SceneDelegate.swift in Sources */,
