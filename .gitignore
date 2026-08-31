@@ -10,3 +10,7 @@ DerivedData/
 
 # Quarkify 분석 산출물
 _quarkify_out/
+
+# 로컬 개발 시크릿/토큰 (커밋 금지)
+scripts/dev-secrets.env
+scripts/*.jwt
