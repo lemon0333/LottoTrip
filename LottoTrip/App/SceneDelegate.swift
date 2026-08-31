@@ -14,6 +14,11 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
+        // 개발용 훅: TEST_JWT 환경변수가 있으면 액세스 토큰으로 주입 → 인증 필요한 API 즉시 사용.
+        // (실서버는 소셜 로그인으로만 JWT 발급 → 백엔드가 발급한 테스트 JWT를 여기로 넣어 실기능 확인)
+        if let jwt = ProcessInfo.processInfo.environment["TEST_JWT"], !jwt.isEmpty {
+            TokenStore.accessToken = jwt
+        }
         // 스크린샷/미리보기용 디버그 훅: SIMCTL_CHILD_SCREEN 환경변수로 특정 화면 바로 진입.
         let screen = ProcessInfo.processInfo.environment["SCREEN"] ?? "login"
         window.rootViewController = Self.rootViewController(for: screen)
