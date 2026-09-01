@@ -24,6 +24,9 @@ packages:
   Kingfisher:
     url: https://github.com/onevcat/Kingfisher
     from: "7.11.0"
+  KakaoOpenSDK:
+    url: https://github.com/kakao/kakao-ios-sdk
+    from: "2.9.0"
 targets:
   LottoTrip:
     type: application
@@ -43,3 +46,9 @@ targets:
       - package: SnapKit
       - package: Then
       - package: Kingfisher
+      - package: KakaoOpenSDK
+        product: KakaoSDKCommon
+      - package: KakaoOpenSDK
+        product: KakaoSDKAuth
+      - package: KakaoOpenSDK
+        product: KakaoSDKUser

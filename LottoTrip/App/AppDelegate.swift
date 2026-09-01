@@ -10,6 +10,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        KakaoLogin.initializeIfPossible()   // 네이티브 앱 키 있을 때만 초기화
         return true
     }
 

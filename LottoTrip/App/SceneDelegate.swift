@@ -4,10 +4,18 @@
 //
 
 import UIKit
+import KakaoSDKAuth
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+
+    /// 카카오 로그인(카카오톡 앱) 콜백 URL 처리
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        if let url = URLContexts.first?.url, AuthApi.isKakaoTalkLoginUrl(url) {
+            _ = AuthController.handleOpenUrl(url: url)
+        }
+    }
 
     func scene(_ scene: UIScene,
                willConnectTo session: UISceneSession,

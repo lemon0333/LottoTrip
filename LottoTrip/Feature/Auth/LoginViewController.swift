@@ -56,10 +56,31 @@ final class LoginViewController: UIViewController {
 
     // MARK: - 동작
 
-    /// 로그인 → 소셜 로그인(현재는 데모 토큰) 성공 시 온보딩 진입
+    /// 로그인 → 카카오 로그인(네이티브 키 설정 시) 또는 데모 토큰 폴백
     @objc private func loginTapped() {
+        guard KakaoLogin.isConfigured else {
+            // 카카오 키 미설정 → 데모 토큰으로 시도 (실서버는 거절될 수 있음)
+            serverLogin(providerToken: "MOCK_KAKAO_TOKEN")
+            return
+        }
         setLoading(true)
-        APIClient.shared.auth.login(provider: .kakao, providerToken: "MOCK_KAKAO_TOKEN") { [weak self] outcome in
+        KakaoLogin.login { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .success(let kakaoToken):
+                // 카카오 access token 을 서버로 전달 → JWT 발급
+                self.serverLogin(providerToken: kakaoToken)
+            case .failure(let error):
+                self.setLoading(false)
+                self.showAlert("카카오 로그인 실패", error.localizedDescription)
+            }
+        }
+    }
+
+    /// 서버 /auth/login (provider=kakao) 호출
+    private func serverLogin(providerToken: String) {
+        setLoading(true)
+        APIClient.shared.auth.login(provider: .kakao, providerToken: providerToken) { [weak self] outcome in
             guard let self else { return }
             self.setLoading(false)
             switch outcome {
@@ -69,6 +90,12 @@ final class LoginViewController: UIViewController {
                 self.showError(error)
             }
         }
+    }
+
+    private func showAlert(_ title: String, _ message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        present(alert, animated: true)
     }
 
     /// 게스트로 시작 → 로그인 없이 온보딩 진입
