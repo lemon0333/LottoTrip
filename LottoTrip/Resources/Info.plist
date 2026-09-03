@@ -23,14 +23,14 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>kakaoPLACEHOLDER</string>
+				<string>kakaodcff340f04d8ac6fde792b80c68d98f9</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>KAKAO_NATIVE_APP_KEY</key>
-	<string></string>
+	<string>dcff340f04d8ac6fde792b80c68d98f9</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>kakaokompassauth</string>
