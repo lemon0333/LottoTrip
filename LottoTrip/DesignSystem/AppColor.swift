@@ -8,7 +8,7 @@
 import UIKit
 
 enum AppColor {
-    static let coral        = UIColor(hex: 0xE07A6F)
+    static let coral        = UIColor(hex: 0xF66053)   // 디자이너 지정 색
     static let dustyPink    = UIColor(hex: 0xD8A99B)
     static let lime         = UIColor(hex: 0x5FB52E)
     static let yellowGreen  = UIColor(hex: 0xA4C73A)
