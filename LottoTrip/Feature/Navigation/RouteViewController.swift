@@ -16,7 +16,7 @@ final class RouteViewController: BaseScrollViewController {
 
         contentStack.addArrangedSubview(headerRow("동선 최적화", right: "새로고침 ↻"))
         contentStack.addArrangedSubview(FlowChipView(items: ["🚶 뚜벅이 · 1km", "🚗 자차 · 20km"], active: [0]))
-        contentStack.addArrangedSubview(UILabel.make("뚜벅이 모드 · 역/터미널 1km + 무장애 정보 교차검증", font: AppFont.medium(12), color: AppColor.cafe))
+        contentStack.addArrangedSubview(UILabel.make("뚜벅이 모드 · 역/터미널 1km + 무장애 정보 교차검증", font: AppFont.medium(12), color: AppColor.sub))
 
         let map = UIView()
         map.backgroundColor = UIColor(hex: 0xD7E6D8)

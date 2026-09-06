@@ -99,7 +99,7 @@ final class ResultViewController: BaseScrollViewController {
         let spacer = UIView(); spacer.setContentHuggingPriority(UILayoutPriority(1), for: .horizontal)
         titleRow.addArrangedSubview(spacer)
 
-        let category = UILabel.make(categoryText, font: AppFont.medium(13), color: AppColor.cafe)
+        let category = UILabel.make(categoryText, font: AppFont.medium(13), color: AppColor.sub)
 
         let meta = UIStackView()
         meta.axis = .horizontal

@@ -32,7 +32,7 @@ final class MissionCompleteViewController: BaseScrollViewController {
         contentStack.addArrangedSubview(circleWrap)
 
         contentStack.addArrangedSubview(UILabel.make("운명 미션 성공!", font: AppFont.bold(26), color: AppColor.ink, align: .center))
-        contentStack.addArrangedSubview(UILabel.make("강릉 아들바위공원 인증 완료", font: AppFont.medium(15), color: AppColor.cafe, align: .center))
+        contentStack.addArrangedSubview(UILabel.make("강릉 아들바위공원 인증 완료", font: AppFont.medium(15), color: AppColor.sub, align: .center))
 
         // 리워드 카드
         let card = CardView(spacing: 12, padding: 18)

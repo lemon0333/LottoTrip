@@ -27,7 +27,7 @@ final class MissionListViewController: BaseScrollViewController {
         }
 
         contentStack.addArrangedSubview(headerRow("산신령의 임무", right: "\(completedCount)/\(missions.count)", rightColor: AppColor.coral))
-        contentStack.addArrangedSubview(UILabel.make("임무를 완료하면 퍼즐 조각이 채워져요", font: AppFont.medium(13), color: AppColor.cafe))
+        contentStack.addArrangedSubview(UILabel.make("임무를 완료하면 퍼즐 조각이 채워져요", font: AppFont.medium(13), color: AppColor.sub))
         for mission in missions {
             contentStack.addArrangedSubview(makeRow(mission))
         }
