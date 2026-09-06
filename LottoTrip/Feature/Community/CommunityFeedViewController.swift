@@ -12,18 +12,30 @@ final class CommunityFeedViewController: BaseScrollViewController {
 
     // 필터 칩(주변 숏폼 / 인기 / 팔로잉) — 단일 선택 토글 관리
     private var filterChips: [FeedToggleChip] = []
-    // 피드 카드 → 장소명 매핑 (탭 시 상세 안내에 사용)
-    private var cardPlaces: [UIView: String] = [:]
 
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "운명 공동체"
 
         contentStack.addArrangedSubview(headerRow("운명 공동체", right: "● LIVE", rightColor: AppColor.coral))
-        contentStack.addArrangedSubview(UILabel.make("내 주변 2km · 같은 목적지 유저 12명", font: AppFont.medium(13), color: AppColor.sub))
+        contentStack.addArrangedSubview(UILabel.make("내 주변 같은 목적지 유저와 소통해요", font: AppFont.medium(13), color: AppColor.sub))
         contentStack.addArrangedSubview(chipRow())
         contentStack.addArrangedSubview(chatBanner())
-        SampleData.feed.forEach { contentStack.addArrangedSubview(feedCard($0)) }
+        // 커뮤니티 API 미제공 — 피드는 empty state 로 표시
+        contentStack.addArrangedSubview(emptyState())
+    }
+
+    // 주변 피드 empty-state (중앙 흐린 라벨)
+    private func emptyState() -> UIView {
+        let container = UIView()
+        let label = UILabel.make("주변 피드가 아직 없어요", font: AppFont.medium(14), color: AppColor.sub, align: .center)
+        container.addSubview(label)
+        label.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.top.bottom.equalToSuperview().inset(56)
+            $0.leading.trailing.equalToSuperview().inset(20)
+        }
+        return container
     }
 
     private func chipRow() -> UIStackView {
@@ -48,7 +60,7 @@ final class CommunityFeedViewController: BaseScrollViewController {
         let banner = UIView()
         banner.backgroundColor = AppColor.coral
         banner.layer.cornerRadius = 14
-        let label = UILabel.make("강릉 아들바위行 운명 공동체 (8명) 입장", font: AppFont.bold(14), color: .white)
+        let label = UILabel.make("운명 공동체 채팅방 입장", font: AppFont.bold(14), color: .white)
         let arrow = UILabel.make("→", font: AppFont.bold(16), color: .white)
         let row = UIStackView(arrangedSubviews: [label, arrow])
         row.axis = .horizontal
@@ -61,37 +73,6 @@ final class CommunityFeedViewController: BaseScrollViewController {
         return banner
     }
 
-    private func feedCard(_ post: CommunityPostDTO) -> CardView {
-        let card = CardView(spacing: 10, padding: 12)
-        let image = UIView()
-        image.backgroundColor = UIColor(hex: 0xC7D4DA)
-        image.layer.cornerRadius = 12
-        image.snp.makeConstraints { $0.height.equalTo(150) }
-
-        let meta = UIStackView()
-        meta.axis = .horizontal
-        meta.distribution = .equalSpacing
-        meta.addArrangedSubview(UILabel.make(post.placeName, font: AppFont.bold(15), color: AppColor.ink))
-        meta.addArrangedSubview(UILabel.make(post.distanceText, font: AppFont.medium(12), color: AppColor.coral))
-
-        let stats = UIStackView()
-        stats.axis = .horizontal
-        stats.spacing = 14
-        stats.addArrangedSubview(UILabel.make("♥ \(post.likes)", font: AppFont.medium(13), color: AppColor.sub))
-        stats.addArrangedSubview(UILabel.make("💬 \(post.comments)", font: AppFont.medium(13), color: AppColor.sub))
-        let statsSpacer = UIView()
-        statsSpacer.setContentHuggingPriority(UILayoutPriority(1), for: .horizontal)
-        stats.addArrangedSubview(statsSpacer)
-
-        card.addArranged(image, meta, stats)
-
-        // 카드 탭 → 해당 장소 상세 안내 (숏폼 게시물이므로 알림으로 처리)
-        cardPlaces[card] = post.placeName
-        card.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(cardTapped(_:))))
-        card.isUserInteractionEnabled = true
-        return card
-    }
-
     @objc private func openChat() {
         navigationController?.pushViewController(ChatRoomViewController(), animated: true)
     }
@@ -99,14 +80,6 @@ final class CommunityFeedViewController: BaseScrollViewController {
     // 필터 칩 단일 선택 — 탭한 칩만 코랄로 채우고 나머지는 해제
     @objc private func filterTapped(_ sender: FeedToggleChip) {
         filterChips.forEach { $0.on = ($0 === sender) }
-    }
-
-    // 피드 카드 탭 → 장소명으로 상세 진입 예고 알림
-    @objc private func cardTapped(_ gesture: UITapGestureRecognizer) {
-        guard let view = gesture.view, let place = cardPlaces[view] else { return }
-        let alert = UIAlertController(title: place, message: "곧 상세가 열려요.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "확인", style: .default))
-        present(alert, animated: true)
     }
 }
 

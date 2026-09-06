@@ -90,13 +90,26 @@ final class UnderlineTabBar: UIView {
 // MARK: - DestinationDetailViewController
 final class DestinationDetailViewController: BaseScrollViewController {
 
-    private let detail: PlaceDetail
+    /// 상세를 조회할 슬롯 id (없으면 empty 상태로 표시)
+    private let slotId: Int?
+
+    /// 로딩 상태 — 정보 탭 표시에 사용
+    private enum LoadState { case idle, loading, failed(String) }
+    private var state: LoadState = .idle
+    /// 서버 상세 조회 결과 (성공 시 채워짐)
+    private var place: PlaceDetailDTO?
+
+    /// 헤더 라벨 — 조회 완료 후 갱신
+    private let nameLabel = UILabel.make("목적지", font: AppFont.bold(22), color: AppColor.ink)
+    private let categoryLabel = UILabel.make("", font: AppFont.medium(13), color: AppColor.sub)
 
     /// 탭별 콘텐츠 컨테이너 (탭 전환 시 내부 뷰 스왑)
     private let contentContainer = UIView()
+    /// 현재 선택된 탭 인덱스 (조회 완료 후 재렌더용)
+    private var currentTab = 0
 
-    init(detail: PlaceDetail = PlaceDetailSampleData.sample) {
-        self.detail = detail
+    init(slotId: Int? = nil) {
+        self.slotId = slotId
         super.init(nibName: nil, bundle: nil)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -113,24 +126,44 @@ final class DestinationDetailViewController: BaseScrollViewController {
         contentStack.addArrangedSubview(tabBar)
 
         contentStack.addArrangedSubview(contentContainer)
+
+        // slotId 가 있으면 상세 조회, 없으면 empty placeholder
+        if let slotId = slotId {
+            state = .loading
+            fetch(slotId)
+        }
         showTab(0)
     }
 
-    // MARK: - 상단 헤더 (장소명 + 상태/후기)
+    // MARK: - 상세 조회
+    private func fetch(_ slotId: Int) {
+        APIClient.shared.slot.result(slotId: slotId) { [weak self] outcome in
+            guard let self = self else { return }
+            switch outcome {
+            case .success(let response):
+                self.place = response.place
+                self.state = .idle
+            case .failure(let error):
+                self.state = .failed(error.description)
+            }
+            self.refresh()
+        }
+    }
+
+    /// 헤더 + 현재 탭 재렌더
+    private func refresh() {
+        nameLabel.text = place?.name ?? "목적지"
+        categoryLabel.text = place?.category ?? ""
+        showTab(currentTab)
+    }
+
+    // MARK: - 상단 헤더 (장소명 + 카테고리)
     private func headerView() -> UIView {
-        let name = UILabel.make(detail.name, font: AppFont.bold(22), color: AppColor.ink)
-        name.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        nameLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        categoryLabel.textAlignment = .right
+        categoryLabel.setContentHuggingPriority(.required, for: .horizontal)
 
-        let status = UILabel.make(detail.openStatus, font: AppFont.semibold(13), color: AppColor.lime)
-        let reviews = UILabel.make("방문자 후기 \(detail.reviewCount)", font: AppFont.medium(13), color: AppColor.sub)
-
-        let right = UIStackView(arrangedSubviews: [status, reviews])
-        right.axis = .vertical
-        right.alignment = .trailing
-        right.spacing = 2
-        right.setContentHuggingPriority(.required, for: .horizontal)
-
-        let row = UIStackView(arrangedSubviews: [name, right])
+        let row = UIStackView(arrangedSubviews: [nameLabel, categoryLabel])
         row.axis = .horizontal
         row.alignment = .center
         row.spacing = 8
@@ -151,33 +184,43 @@ final class DestinationDetailViewController: BaseScrollViewController {
 
     // MARK: - 탭 전환
     private func showTab(_ index: Int) {
+        currentTab = index
         contentContainer.subviews.forEach { $0.removeFromSuperview() }
         let content: UIView
         switch index {
-        case 1:  content = menuTab()
-        case 2:  content = reviewTab()
+        case 1:  content = centeredEmpty("메뉴 정보가 없어요")   // 백엔드에 메뉴 데이터 없음
+        case 2:  content = centeredEmpty("후기가 없어요")       // 백엔드에 후기 데이터 없음
         default: content = infoTab()
         }
         contentContainer.addSubview(content)
         content.snp.makeConstraints { $0.edges.equalToSuperview() }
     }
 
-    // MARK: - 정보 탭
+    // MARK: - 정보 탭 (서버 상세 조회 결과)
     private func infoTab() -> UIView {
-        let stack = UIStackView()
-        stack.axis = .vertical
-        stack.spacing = 14
+        // 조회 결과가 있으면 실제 정보 표시
+        if let place = place {
+            let stack = UIStackView()
+            stack.axis = .vertical
+            stack.spacing = 14
 
-        stack.addArrangedSubview(infoRow(symbol: "mappin", text: detail.address))
-        stack.addArrangedSubview(infoRow(symbol: "clock", text: "\(detail.openStatus)   \(detail.hours)"))
-        stack.addArrangedSubview(infoRow(symbol: "phone", text: detail.phone))
+            stack.addArrangedSubview(infoRow(symbol: "mappin", text: place.address ?? "주소 정보가 없어요"))
+            if let description = place.description, !description.isEmpty {
+                let body = UILabel.make(description, font: AppFont.regular(14), color: AppColor.ink, lines: 0)
+                stack.addArrangedSubview(body)
+            }
+            if let homepage = place.homepageUrl, !homepage.isEmpty {
+                stack.addArrangedSubview(infoRow(symbol: "link", text: homepage))
+            }
+            return stack
+        }
 
-        // 도로명 / 우편번호 2열 정보 카드
-        let card = CardView(spacing: 12)
-        card.addArranged(infoColumn(title: "도로명", value: detail.roadAddress),
-                         infoColumn(title: "우편번호", value: detail.zipCode))
-        stack.addArrangedSubview(card)
-        return stack
+        // 결과 없음 — 상태별 placeholder
+        switch state {
+        case .loading:            return centeredEmpty("불러오는 중...")
+        case .failed(let message): return centeredEmpty(message)
+        case .idle:               return centeredEmpty("장소 정보가 없어요")
+        }
     }
 
     /// SF Symbol 아이콘 + 텍스트 한 줄
@@ -187,101 +230,25 @@ final class DestinationDetailViewController: BaseScrollViewController {
         icon.contentMode = .scaleAspectFit
         icon.snp.makeConstraints { $0.size.equalTo(20) }
 
-        let label = UILabel.make(text, font: AppFont.medium(14), color: AppColor.ink)
+        let label = UILabel.make(text, font: AppFont.medium(14), color: AppColor.ink, lines: 0)
 
         let row = UIStackView(arrangedSubviews: [icon, label])
         row.axis = .horizontal
-        row.alignment = .center
-        row.spacing = 12
-        return row
-    }
-
-    /// 2열 정보 카드용 (제목 + 값)
-    private func infoColumn(title: String, value: String) -> UIView {
-        let t = UILabel.make(title, font: AppFont.medium(12), color: AppColor.sub)
-        t.snp.makeConstraints { $0.width.equalTo(56) }
-        let v = UILabel.make(value, font: AppFont.medium(14), color: AppColor.ink)
-        let row = UIStackView(arrangedSubviews: [t, v])
-        row.axis = .horizontal
         row.alignment = .top
-        row.spacing = 10
+        row.spacing = 12
         return row
     }
 
-    // MARK: - 메뉴 탭
-    private func menuTab() -> UIView {
-        let stack = UIStackView()
-        stack.axis = .vertical
-        stack.spacing = 12
-        detail.menus.forEach { stack.addArrangedSubview(menuRow(name: $0)) }
-        return stack
-    }
-
-    private func menuRow(name: String) -> UIView {
-        // 원형 아바타 placeholder
-        let avatar = UIView()
-        avatar.backgroundColor = AppColor.tileEmpty
-        avatar.layer.cornerRadius = 20
-        avatar.snp.makeConstraints { $0.size.equalTo(40) }
-
-        let label = UILabel.make(name, font: AppFont.semibold(15), color: AppColor.ink)
-        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
-
-        // 이미지 placeholder 2개
-        let thumbs = UIStackView(arrangedSubviews: [thumb(), thumb()])
-        thumbs.axis = .horizontal
-        thumbs.spacing = 8
-
-        let row = UIStackView(arrangedSubviews: [avatar, label, thumbs])
-        row.axis = .horizontal
-        row.alignment = .center
-        row.spacing = 12
-
-        let box = UIView()
-        box.backgroundColor = AppColor.card
-        box.layer.cornerRadius = 14
-        box.layer.borderWidth = 1
-        box.layer.borderColor = AppColor.line.cgColor
-        box.addSubview(row)
-        row.snp.makeConstraints { $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 12, left: 14, bottom: 12, right: 14)) }
-        return box
-    }
-
-    private func thumb() -> UIView {
-        let v = UIView()
-        v.backgroundColor = AppColor.tileEmpty
-        v.layer.cornerRadius = 8
-        v.snp.makeConstraints { $0.size.equalTo(36) }
-        return v
-    }
-
-    // MARK: - 후기 탭
-    private func reviewTab() -> UIView {
-        let stack = UIStackView()
-        stack.axis = .vertical
-        stack.spacing = 12
-        (0..<3).forEach { _ in stack.addArrangedSubview(reviewCard()) }
-        return stack
-    }
-
-    private func reviewCard() -> UIView {
-        let avatar = UIView()
-        avatar.backgroundColor = AppColor.tileEmpty
-        avatar.layer.cornerRadius = 16
-        avatar.snp.makeConstraints { $0.size.equalTo(32) }
-        let nameLabel = UILabel.make("이름", font: AppFont.semibold(14), color: AppColor.ink)
-        let head = UIStackView(arrangedSubviews: [avatar, nameLabel])
-        head.axis = .horizontal
-        head.alignment = .center
-        head.spacing = 10
-
-        let image = UIView()
-        image.backgroundColor = AppColor.tileEmpty
-        image.layer.cornerRadius = 10
-        image.snp.makeConstraints { $0.height.equalTo(120) }
-
-        let card = CardView(spacing: 12)
-        card.addArranged(head, image)
-        return card
+    // MARK: - 중앙 empty-state 라벨
+    private func centeredEmpty(_ text: String) -> UIView {
+        let container = UIView()
+        let label = UILabel.make(text, font: AppFont.medium(14), color: AppColor.sub, align: .center, lines: 0)
+        container.addSubview(label)
+        label.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.top.bottom.equalToSuperview().inset(48)
+            $0.leading.trailing.equalToSuperview().inset(20)
+        }
+        return container
     }
 }

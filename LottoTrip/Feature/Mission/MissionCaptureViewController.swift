@@ -10,7 +10,7 @@ import SnapKit
 
 final class MissionCaptureViewController: UIViewController {
 
-    private let mission = SampleData.mission
+    // 레거시 화면 — 실제 미션 데이터 연동 전까지 중립 placeholder 표시
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,7 +25,7 @@ final class MissionCaptureViewController: UIViewController {
         story.layer.borderColor = UIColor(hex: 0xF5C542).cgColor
         let storyStack = UIStackView(arrangedSubviews: [
             UILabel.make("🧙 산신령 가라사대", font: AppFont.bold(14), color: UIColor(hex: 0xF5C542)),
-            UILabel.make(mission.narratorLine, font: AppFont.medium(13), color: .white)
+            UILabel.make("", font: AppFont.medium(13), color: .white)
         ])
         storyStack.axis = .vertical
         storyStack.spacing = 8
@@ -58,7 +58,7 @@ final class MissionCaptureViewController: UIViewController {
         let reward = UIView()
         reward.backgroundColor = UIColor(hex: 0x2E2E36)
         reward.layer.cornerRadius = 14
-        let rewardLabel = UILabel.make("🎁 로컬 럭키 드로우 · \(mission.couponTitle)", font: AppFont.bold(13), color: AppColor.lime, align: .center)
+        let rewardLabel = UILabel.make("🎁 로컬 럭키 드로우", font: AppFont.bold(13), color: AppColor.lime, align: .center)
         reward.addSubview(rewardLabel)
         rewardLabel.snp.makeConstraints { $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)) }
 

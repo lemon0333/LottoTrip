@@ -10,9 +10,7 @@ import SnapKit
 
 final class ResultViewController: BaseScrollViewController {
 
-    private let dest = SampleData.destination
-
-    /// 슬롯 draw 로 받은 실제 서버 결과 (없으면 SampleData 로 표시)
+    /// 슬롯 draw 로 받은 실제 서버 결과 (없으면 중립 placeholder 표시)
     private let result: SlotDrawResponseDTO?
 
     init(result: SlotDrawResponseDTO? = nil) {
@@ -21,24 +19,17 @@ final class ResultViewController: BaseScrollViewController {
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    // MARK: - 표시값 (서버 결과 우선, 없으면 SampleData 폴백)
+    // MARK: - 표시값 (서버 결과 기반, 없으면 중립값)
 
-    private var placeName: String { result?.place.name ?? dest.name }
-    private var categoryText: String {
-        // category 는 백엔드 한글 displayName 문자열 그대로 표시
-        if let category = result?.place.category, !category.isEmpty, category != "UNKNOWN" { return category }
-        return dest.category
-    }
-    private var locationText: String {
-        // draw 응답엔 주소가 없으므로(상세조회에만 있음) 카테고리·지역 느낌으로 표시
-        if let category = result?.place.category, !category.isEmpty { return "TourAPI · \(category)" }
-        return "TourAPI · 강원 강릉시"
-    }
+    private var placeName: String { result?.place.name ?? "목적지" }
+    // category 는 백엔드 한글 displayName 문자열 그대로 표시
+    private var categoryText: String { result?.place.category ?? "" }
+    // draw 응답엔 주소가 없으므로(상세조회에만 있음) 카테고리 느낌으로 표시
+    private var locationText: String { result.map { "TourAPI · \($0.place.category)" } ?? "" }
     private var metaLine: String {
-        if let km = result?.place.distanceKm { return "거리 \(Int(km.rounded()))km" }
-        return "예산 ~\(dest.budget / 10000)만원"
+        result?.place.distanceKm.map { "거리 \(Int($0.rounded()))km" } ?? ""
     }
-    private var missionTitle: String { result?.mission?.title ?? dest.missionTitle }
+    private var missionTitle: String { result?.mission?.title ?? "" }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -110,7 +101,7 @@ final class ResultViewController: BaseScrollViewController {
         meta.addArrangedSubview(metaSpacer)
 
         // 퍼즐 조각 연동 배지
-        let piece = pieceBadge("이 장소는 ‘강릉’ 조각을 채워요")
+        let piece = pieceBadge("이 장소로 지도 조각을 채워요")
 
         card.addArranged(titleRow, category, meta, piece)
         return card
@@ -144,10 +135,11 @@ final class ResultViewController: BaseScrollViewController {
 
     @objc private func goRoute() {
         navigationController?.pushViewController(
-            RouteFindViewController(destinationName: placeName), animated: true)
+            RouteFindViewController(destinationName: placeName, slotId: result?.slotId), animated: true)
     }
     @objc private func goDetail() {
-        navigationController?.pushViewController(DestinationDetailViewController(), animated: true)
+        navigationController?.pushViewController(
+            DestinationDetailViewController(slotId: result?.slotId), animated: true)
     }
     @objc private func goShortform() { navigationController?.pushViewController(ShortformEditorViewController(), animated: true) }
 
@@ -175,15 +167,5 @@ final class ResultViewController: BaseScrollViewController {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "확인", style: .default))
         present(alert, animated: true)
-    }
-
-    // MARK: - enum → 한글 라벨
-
-    private static func budgetLabel(_ level: BudgetLevel) -> String {
-        switch level {
-        case .low:    return "~5만원"
-        case .medium: return "~10만원"
-        case .high:   return "20만원+"
-        }
     }
 }

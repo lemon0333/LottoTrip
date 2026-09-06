@@ -19,7 +19,6 @@
 		219329BF579DEB53826C570F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC492BAB7B2FDB1408561186 /* AppDelegate.swift */; };
 		227826C463C62059CAC79AD5 /* Domain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF7D7E10CEA5B88F2D0CE6B /* Domain.swift */; };
 		23BBC1383B02C78B4DF59830 /* RouteService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6F4DD2B85FC7916BBAD941C /* RouteService.swift */; };
-		23FEB4D3DA326E99DE9D01B9 /* PlaceDetailModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00DC7E83C489DC5B2D54F40D /* PlaceDetailModels.swift */; };
 		27C907605B5904B4259150DB /* ChatTargetType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00396A0CA8410053CCB8F70B /* ChatTargetType.swift */; };
 		2918035756B0B64CB6340339 /* OnboardingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7586339FAD149310C135D3 /* OnboardingViews.swift */; };
 		2B172DC4255882561F79BE8C /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = 3700B9B0A26346452B67F16F /* KakaoSDKUser */; };
@@ -55,7 +54,6 @@
 		7C0F1018F90DC1C5C348C686 /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB3DEED461C3524DC3F3AAC /* ChatService.swift */; };
 		80CFC732B01F123D6BDC88BE /* VideoDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBE4BA3F06C9BBA6316A372 /* VideoDTO.swift */; };
 		838F67FD09CB4B8CE03280FB /* DestinationDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6AD284811036287D89B3322 /* DestinationDetailViewController.swift */; };
-		83BCB4A1B8F18C818ED22F72 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EDB04106BE259C9BD077DB /* SampleData.swift */; };
 		86144D60C8E2145B32B6B5B0 /* RootTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D9AEC4B8617C8AE48B84B49 /* RootTabBarController.swift */; };
 		8827500BFBA84850E7FED46B /* AppColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCBFEA9C6ECA660D6C4CD230 /* AppColor.swift */; };
 		882FAD1BA89892FCC2267986 /* MissionDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59CEA065E5B31E9A756448AF /* MissionDTO.swift */; };
@@ -97,7 +95,6 @@
 /* Begin PBXFileReference section */
 		000950F52B6F1C14B0AADB8C /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		00396A0CA8410053CCB8F70B /* ChatTargetType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTargetType.swift; sourceTree = "<group>"; };
-		00DC7E83C489DC5B2D54F40D /* PlaceDetailModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceDetailModels.swift; sourceTree = "<group>"; };
 		0170DD09478BB5A7FA00210F /* MissionArrivalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionArrivalViewController.swift; sourceTree = "<group>"; };
 		02E15BECA74C92116EFD3748 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		119935C8853E7F9F5A03F3EE /* NetworkManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManagerProtocol.swift; sourceTree = "<group>"; };
@@ -149,7 +146,6 @@
 		ADA2979F5427F3DB89EA3606 /* KakaoLoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakaoLoginManager.swift; sourceTree = "<group>"; };
 		AF54A735696CF90CF9CC1867 /* CourseDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseDTO.swift; sourceTree = "<group>"; };
 		B07C478018B5521C6860062F /* MissionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionService.swift; sourceTree = "<group>"; };
-		B6EDB04106BE259C9BD077DB /* SampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleData.swift; sourceTree = "<group>"; };
 		BC70A7EEE82EB22E1124C82B /* NetworkManagerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManagerExtension.swift; sourceTree = "<group>"; };
 		BCF86343D78581904B9ED9E0 /* MissionTargetType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionTargetType.swift; sourceTree = "<group>"; };
 		BD18D8754A3339EA28055BD5 /* WantedSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WantedSans-Medium.ttf"; sourceTree = "<group>"; };
@@ -220,7 +216,6 @@
 			isa = PBXGroup;
 			children = (
 				D6AD284811036287D89B3322 /* DestinationDetailViewController.swift */,
-				00DC7E83C489DC5B2D54F40D /* PlaceDetailModels.swift */,
 				22E80A31F1E5B9696585F9D0 /* RouteFindViewController.swift */,
 			);
 			path = Detail;
@@ -425,7 +420,6 @@
 				F7E2E7E4479554E4DFA20754 /* PuzzleDTO.swift */,
 				32DAE0EFF73F4F2526F4C8F4 /* RecommendDTO.swift */,
 				DE265568CFF182E1CC7C4568 /* RouteDTO.swift */,
-				B6EDB04106BE259C9BD077DB /* SampleData.swift */,
 				7301A9B51A38B2257DA45B62 /* SlotDTO.swift */,
 				1FF2D420C15A8CD456E8DC30 /* UserMissionDTO.swift */,
 				4CBE4BA3F06C9BBA6316A372 /* VideoDTO.swift */,
@@ -623,7 +617,6 @@
 				1CDB5A6FB34BD893046107D9 /* OnboardingStepViewController.swift in Sources */,
 				EEDF7F89CCEE161E844CF8B7 /* OnboardingSteps.swift in Sources */,
 				2918035756B0B64CB6340339 /* OnboardingViews.swift in Sources */,
-				23FEB4D3DA326E99DE9D01B9 /* PlaceDetailModels.swift in Sources */,
 				15B2A9F5DE6F3CBC8B2F9FD4 /* PreferenceViewController.swift in Sources */,
 				D3E73839A9F1478207DB5DE8 /* PuzzleDTO.swift in Sources */,
 				DD6AB529B207A16FEAC0E393 /* PuzzleHomeViewController.swift in Sources */,
@@ -636,7 +629,6 @@
 				23BBC1383B02C78B4DF59830 /* RouteService.swift in Sources */,
 				CEC1A614A88294E627D6C356 /* RouteTargetType.swift in Sources */,
 				48263E8BD659400B66C646E0 /* RouteViewController.swift in Sources */,
-				83BCB4A1B8F18C818ED22F72 /* SampleData.swift in Sources */,
 				C31863614B7BCF8EC4088E42 /* SceneDelegate.swift in Sources */,
 				58279E4A98E48BB9EDE3FB59 /* ShortformEditorViewController.swift in Sources */,
 				307DB32D2CB01E60E65348C6 /* SlotDTO.swift in Sources */,

@@ -56,11 +56,10 @@ final class LoginViewController: UIViewController {
 
     // MARK: - 동작
 
-    /// 로그인 → 카카오 로그인(네이티브 키 설정 시) 또는 데모 토큰 폴백
+    /// 로그인 → 실제 카카오 로그인 → 서버 JWT 발급
     @objc private func loginTapped() {
         guard KakaoLogin.isConfigured else {
-            // 카카오 키 미설정 → 데모 토큰으로 시도 (실서버는 거절될 수 있음)
-            serverLogin(providerToken: "MOCK_KAKAO_TOKEN")
+            showAlert("안내", "카카오 로그인이 설정되지 않았습니다.")
             return
         }
         setLoading(true)

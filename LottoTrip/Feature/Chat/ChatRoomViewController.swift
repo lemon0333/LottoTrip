@@ -13,6 +13,8 @@ final class ChatRoomViewController: UIViewController {
     private let scrollView = UIScrollView()
     private let messageStack = UIStackView()
     private let inputBar = UIView()
+    // 메시지가 하나도 없을 때 보이는 흐린 placeholder
+    private let emptyLabel = UILabel.make("아직 메시지가 없어요", font: AppFont.medium(14), color: AppColor.sub, align: .center)
     // 입력 필드 + 전송 버튼 (실제 전송처럼 동작)
     private let textField = UITextField()
     private let sendButton = UIButton(type: .system)
@@ -22,7 +24,7 @@ final class ChatRoomViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = AppColor.ivory
-        navigationItem.title = SampleData.chatRoom.title
+        navigationItem.title = "채팅방"
 
         scrollView.showsVerticalScrollIndicator = false
         messageStack.axis = .vertical
@@ -34,6 +36,7 @@ final class ChatRoomViewController: UIViewController {
 
         view.addSubview(scrollView)
         view.addSubview(inputBar)
+        view.addSubview(emptyLabel)
         scrollView.addSubview(messageStack)
 
         inputBar.snp.makeConstraints {
@@ -49,8 +52,10 @@ final class ChatRoomViewController: UIViewController {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalTo(scrollView.frameLayoutGuide)
         }
+        // 메시지 영역 중앙에 흐린 placeholder 배치 (메시지 없을 때만 표시)
+        emptyLabel.snp.makeConstraints { $0.center.equalTo(scrollView) }
 
-        SampleData.chat.forEach { messageStack.addArrangedSubview(messageView($0)) }
+        // 시작 시 메시지 없음 — placeholder 노출
     }
 
     private func messageView(_ msg: ChatMessageDTO) -> UIView {
@@ -135,6 +140,8 @@ final class ChatRoomViewController: UIViewController {
         let msg = ChatMessageDTO(id: "me-\(sentCount)", sender: "나", text: text, isMine: true, isSystem: false)
         messageStack.addArrangedSubview(messageView(msg))
         textField.text = ""
+        // 첫 메시지가 생기면 placeholder 숨김
+        emptyLabel.isHidden = true
 
         // 새 메시지가 보이도록 맨 아래로 스크롤
         scrollToBottom()

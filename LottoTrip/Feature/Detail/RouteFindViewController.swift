@@ -3,7 +3,7 @@
 //  LottoTrip
 //
 //  길찾기 — 대중교통 / 자동차 / 자전거 / 도보 (커스텀 탭 + 콘텐츠 스왑).
-//  TODO: 실제 길찾기 연동(카카오/티맵 등) 필요 — 현재는 목업/placeholder.
+//  slotId 기준 RouteService 실제 경로 조회.
 //
 
 import UIKit
@@ -79,13 +79,16 @@ final class RouteMapView: UIView {
 final class RouteFindViewController: BaseScrollViewController {
 
     private let destinationName: String
-    private let distanceKm: Int
+    /// 경로를 조회할 슬롯 id (없으면 empty 상태로 표시)
+    private let slotId: Int?
 
     private let contentContainer = UIView()
+    /// 현재 선택된 탭 인덱스 (비동기 응답의 stale 방지)
+    private var currentTab = 0
 
-    init(destinationName: String = "목적지 이름", distanceKm: Int = 110) {
+    init(destinationName: String = "목적지", slotId: Int? = nil) {
         self.destinationName = destinationName
-        self.distanceKm = distanceKm
+        self.slotId = slotId
         super.init(nibName: nil, bundle: nil)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -106,37 +109,172 @@ final class RouteFindViewController: BaseScrollViewController {
         showTab(0)
     }
 
-    // MARK: - 탭 전환
+    // MARK: - 탭 전환 (선택 시 해당 경로 조회)
     private func showTab(_ index: Int) {
-        contentContainer.subviews.forEach { $0.removeFromSuperview() }
-        let content: UIView
-        switch index {
-        case 0:  content = transitTab()
-        case 2:  content = driveTab(duration: "6시간 12분", distance: "\(distanceKm)km")   // 자전거 (목업)
-        case 3:  content = driveTab(duration: "22시간", distance: "\(distanceKm)km")        // 도보 (목업)
-        default: content = driveTab(duration: "2시간 53분", distance: "\(distanceKm)km")    // 자동차
+        currentTab = index
+
+        guard let slotId = slotId else {
+            setContent(centeredEmpty("경로 정보를 불러올 수 없어요"))
+            return
         }
-        contentContainer.addSubview(content)
-        content.snp.makeConstraints { $0.edges.equalToSuperview() }
+
+        setContent(centeredEmpty("불러오는 중..."))
+        switch index {
+        case 0:  fetchTransit(slotId, for: index)          // 대중교통
+        case 3:  fetchWalk(slotId, for: index)             // 도보
+        default: fetchCar(slotId, for: index)              // 자동차 / 자전거
+        }
     }
 
-    // MARK: - 대중교통 탭
-    private func transitTab() -> UIView {
+    /// 컨테이너 콘텐츠 스왑
+    private func setContent(_ view: UIView) {
+        contentContainer.subviews.forEach { $0.removeFromSuperview() }
+        contentContainer.addSubview(view)
+        view.snp.makeConstraints { $0.edges.equalToSuperview() }
+    }
+
+    // MARK: - 경로 조회
+    private func fetchTransit(_ slotId: Int, for index: Int) {
+        APIClient.shared.route.transit(slotId: slotId) { [weak self] outcome in
+            guard let self = self, self.currentTab == index else { return }
+            switch outcome {
+            case .success(let route):  self.setContent(self.transitContent(route))
+            case .failure(let error):  self.setContent(self.centeredEmpty(error.description))
+            }
+        }
+    }
+
+    private func fetchCar(_ slotId: Int, for index: Int) {
+        APIClient.shared.route.car(slotId: slotId) { [weak self] outcome in
+            guard let self = self, self.currentTab == index else { return }
+            switch outcome {
+            case .success(let car):    self.setContent(self.carContent(car))
+            case .failure(let error):  self.setContent(self.centeredEmpty(error.description))
+            }
+        }
+    }
+
+    private func fetchWalk(_ slotId: Int, for index: Int) {
+        APIClient.shared.route.walk(slotId: slotId) { [weak self] outcome in
+            guard let self = self, self.currentTab == index else { return }
+            switch outcome {
+            case .success(let walk):   self.setContent(self.walkContent(walk))
+            case .failure(let error):  self.setContent(self.centeredEmpty(error.description))
+            }
+        }
+    }
+
+    // MARK: - 대중교통 콘텐츠 (총 시간 + 요금 + 구간 타임라인)
+    private func transitContent(_ route: RouteResponseDTO) -> UIView {
         let stack = UIStackView()
         stack.axis = .vertical
         stack.spacing = 16
 
-        stack.addArrangedSubview(UILabel.make("2시간 53분", font: AppFont.bold(22), color: AppColor.ink))
-        stack.addArrangedSubview(UILabel.make("오후 1:30 - 오후 4:23", font: AppFont.medium(14), color: AppColor.sub))
+        stack.addArrangedSubview(UILabel.make(durationText(route.totalMinutes), font: AppFont.bold(22), color: AppColor.ink))
+        if let payment = route.payment {
+            stack.addArrangedSubview(UILabel.make("요금 \(payment)원", font: AppFont.medium(14), color: AppColor.sub))
+        }
 
-        // 세로 타임라인
-        stack.addArrangedSubview(timelineStep(
-            title: "🚌 버스 92, 9",
-            lines: ["3분 후 도착", "13개 정류장 · 21분 이동"]))
-        stack.addArrangedSubview(timelineStep(
-            title: "강변역 (B) 하차",
-            lines: [], isLast: true))
+        if route.legs.isEmpty {
+            stack.addArrangedSubview(UILabel.make("상세 구간 정보가 없어요", font: AppFont.medium(13), color: AppColor.sub))
+        } else {
+            for (idx, leg) in route.legs.enumerated() {
+                stack.addArrangedSubview(timelineStep(
+                    title: legTitle(leg),
+                    lines: legLines(leg),
+                    isLast: idx == route.legs.count - 1))
+            }
+        }
         return stack
+    }
+
+    /// 구간(leg) 제목 — 노선명 우선, 없으면 이동수단 한글
+    private func legTitle(_ leg: RouteLegDTO) -> String {
+        if let name = leg.routeName, !name.isEmpty { return name }
+        return modeLabel(leg.mode)
+    }
+
+    private func modeLabel(_ mode: String) -> String {
+        switch mode.uppercased() {
+        case "BUS":    return "버스"
+        case "SUBWAY": return "지하철"
+        case "WALK":   return "도보"
+        default:       return mode
+        }
+    }
+
+    /// 구간 상세 텍스트 (출발→도착, 정류장 수·소요시간)
+    private func legLines(_ leg: RouteLegDTO) -> [String] {
+        var lines: [String] = []
+        if let start = leg.startName, let end = leg.endName {
+            lines.append("\(start) → \(end)")
+        } else if let start = leg.startName {
+            lines.append(start)
+        } else if let end = leg.endName {
+            lines.append("\(end) 하차")
+        }
+        var detail: [String] = []
+        if let count = leg.stationCount { detail.append("\(count)개 정류장") }
+        if let minutes = leg.sectionMinutes { detail.append("\(minutes)분 이동") }
+        if !detail.isEmpty { lines.append(detail.joined(separator: " · ")) }
+        return lines
+    }
+
+    // MARK: - 자동차 / 도보 콘텐츠
+    private func carContent(_ car: CarRouteDTO) -> UIView {
+        var details: [String] = []
+        if let meters = car.totalDistanceMeters { details.append(distanceText(meters: meters)) }
+        if let toll = car.tollFare, toll > 0 { details.append("통행료 \(toll)원") }
+        if let taxi = car.taxiFare, taxi > 0 { details.append("택시 예상 \(taxi)원") }
+        return summaryCard(duration: durationText(car.totalMinutes), details: details)
+    }
+
+    private func walkContent(_ walk: WalkRouteDTO) -> UIView {
+        var details: [String] = []
+        if let meters = walk.totalDistanceMeters { details.append(distanceText(meters: Double(meters))) }
+        return summaryCard(duration: durationText(walk.totalMinutes), details: details)
+    }
+
+    /// 총 시간 카드 + 부가정보 + 안내 시작 버튼
+    private func summaryCard(duration: String, details: [String]) -> UIView {
+        let card = CardView(spacing: 6)
+        card.addArranged(UILabel.make(duration, font: AppFont.bold(22), color: AppColor.ink))
+        details.forEach { card.addArranged(UILabel.make($0, font: AppFont.medium(15), color: AppColor.sub)) }
+
+        let startButton = PrimaryButton(title: "안내 시작", bg: AppColor.ink)
+        startButton.addTarget(self, action: #selector(startGuide), for: .touchUpInside)
+
+        let stack = UIStackView(arrangedSubviews: [card, startButton])
+        stack.axis = .vertical
+        stack.spacing = 16
+        return stack
+    }
+
+    // MARK: - 포맷 헬퍼
+    /// 분 → "X시간 Y분"
+    private func durationText(_ minutes: Int) -> String {
+        let hours = minutes / 60, mins = minutes % 60
+        if hours > 0 && mins > 0 { return "\(hours)시간 \(mins)분" }
+        if hours > 0 { return "\(hours)시간" }
+        return "\(mins)분"
+    }
+
+    /// 미터 → "X.Ykm"
+    private func distanceText(meters: Double) -> String {
+        String(format: "%.1fkm", meters / 1000)
+    }
+
+    // MARK: - 중앙 empty-state / placeholder 라벨
+    private func centeredEmpty(_ text: String) -> UIView {
+        let container = UIView()
+        let label = UILabel.make(text, font: AppFont.medium(14), color: AppColor.sub, align: .center, lines: 0)
+        container.addSubview(label)
+        label.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.top.bottom.equalToSuperview().inset(48)
+            $0.leading.trailing.equalToSuperview().inset(20)
+        }
+        return container
     }
 
     /// 왼쪽 코랄 세로선 + 점 + 우측 텍스트로 구성된 타임라인 스텝
@@ -180,23 +318,6 @@ final class RouteFindViewController: BaseScrollViewController {
             texts.snp.makeConstraints { $0.height.greaterThanOrEqualTo(52) }
         }
         return row
-    }
-
-    // MARK: - 자동차 / 자전거 / 도보 탭 (동일 레이아웃 재사용)
-    private func driveTab(duration: String, distance: String) -> UIView {
-        let card = CardView(spacing: 6)
-        card.addArranged(
-            UILabel.make(duration, font: AppFont.bold(22), color: AppColor.ink),
-            UILabel.make(distance, font: AppFont.medium(15), color: AppColor.sub)
-        )
-
-        let startButton = PrimaryButton(title: "안내 시작", bg: AppColor.ink)
-        startButton.addTarget(self, action: #selector(startGuide), for: .touchUpInside)
-
-        let stack = UIStackView(arrangedSubviews: [card, startButton])
-        stack.axis = .vertical
-        stack.spacing = 16
-        return stack
     }
 
     @objc private func startGuide() {
